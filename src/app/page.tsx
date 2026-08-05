@@ -25,6 +25,15 @@ const MOCK_REQUIREMENTS = [
   { id: 'RQ-1048', title: 'GDPR compliance data deletion request', risk: 'High', coverage: 100, aiConf: 99, status: 'approved' },
 ];
 
+const MOCK_TEST_CASES = [
+  { id: 'TC-201', title: 'Verify SSO login with valid Okta credentials', priority: 'P0', type: 'E2E', status: 'ready', auto: true },
+  { id: 'TC-202', title: 'Verify SSO login with expired Okta session', priority: 'P1', type: 'Functional', status: 'draft', auto: false },
+  { id: 'TC-203', title: 'Admin dashboard access is denied for regular users', priority: 'P0', type: 'E2E', status: 'ready', auto: true },
+  { id: 'TC-204', title: 'Session terminates exactly after 15m of inactivity', priority: 'P2', type: 'Functional', status: 'ready', auto: true },
+  { id: 'TC-205', title: 'Reset password sends email with 6-digit OTP', priority: 'P1', type: 'API', status: 'review', auto: false },
+  { id: 'TC-206', title: 'Login API returns 429 after 5 failed attempts', priority: 'P0', type: 'API', status: 'ready', auto: true },
+];
+
 // We inject the design system tokens required by the spec.
 // Using a deep dark theme inspired by Linear/Vercel.
 const GlobalStyles = () => (
@@ -254,7 +263,7 @@ const Header = ({ activeRoute }: { activeRoute: string }) => {
   );
 };
 
-const PRDIntakePage = () => {
+const PRDIntakePage = ({ setActiveRoute }: { setActiveRoute: (route: string) => void }) => {
   const [selectedPlatform, setSelectedPlatform] = useState('MI Android');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false); 
@@ -430,6 +439,15 @@ const PRDIntakePage = () => {
               </div>
             </div>
 
+            {/* Mobile Action Button (Hidden on Desktop since it's in Side Panel) */}
+            {!isUploaded && (
+              <div className="lg:hidden w-full flex justify-end">
+                <Button variant="primary" icon={Sparkles} className="px-6 py-2.5 pointer-events-none opacity-50">
+                  Begin AI Analysis
+                </Button>
+              </div>
+            )}
+
             {/* PRD Content Preview (Only shown when uploaded) */}
             {isUploaded && (
               <div className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl flex flex-col overflow-hidden shadow-sm">
@@ -564,32 +582,25 @@ const PRDIntakePage = () => {
             )}
 
             {/* Actions Footer */}
-            <div className="flex justify-between items-center pt-4">
-              {isUploaded ? (
-                <>
-                  <Button 
-                    variant="ghost" 
-                    onClick={() => setIsUploaded(false)} 
-                    className="text-rose-600 dark:text-rose-400 hover:text-rose-300 hover:bg-rose-50 dark:bg-rose-500/10 border-transparent px-4"
-                  >
-                    Clear
-                  </Button>
-                  <Button 
-                    variant="primary" 
-                    icon={Sparkles} 
-                    className="px-8 py-2.5 text-sm shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_25px_rgba(99,102,241,0.5)]"
-                  >
-                    Generate Scenarios
-                  </Button>
-                </>
-              ) : (
-                <div className="w-full flex justify-end">
-                  <Button variant="primary" icon={Sparkles} className="px-6 py-2 pointer-events-none opacity-50">
-                    Begin AI Analysis
-                  </Button>
-                </div>
-              )}
-            </div>
+            {isUploaded && (
+              <div className="flex justify-between items-center pt-4">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setIsUploaded(false)} 
+                  className="text-rose-600 dark:text-rose-400 hover:text-rose-300 hover:bg-rose-50 dark:bg-rose-500/10 border-transparent px-4"
+                >
+                  Clear
+                </Button>
+                <Button 
+                  variant="primary" 
+                  icon={Sparkles} 
+                  className="px-8 py-2.5 text-sm shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_25px_rgba(99,102,241,0.5)]"
+                  onClick={() => setActiveRoute('coverage-audit')}
+                >
+                  Generate Scenarios
+                </Button>
+              </div>
+            )}
 
           </div>
 
@@ -626,6 +637,15 @@ const PRDIntakePage = () => {
                 ))}
               </div>
             </div>
+
+            {/* Action Button (Desktop Side Panel) */}
+            {!isUploaded && (
+              <div className="pt-2">
+                <Button variant="primary" icon={Sparkles} className="w-full py-2.5 pointer-events-none opacity-50 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                  Begin AI Analysis
+                </Button>
+              </div>
+            )}
           </div>
 
         </div>
@@ -801,59 +821,69 @@ const CoverageAuditPage = ({ setActiveRoute }: { setActiveRoute: (route: string)
         {/* AI Summary Stats - 0 Capabilities */}
         <div className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 flex items-center justify-between shadow-sm">
            <div className="flex items-center gap-3 text-zinc-500 dark:text-zinc-400 dark:text-zinc-400 text-sm">
-             <div className="w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex items-center justify-center shrink-0">
-                <AlertCircle size={16} className="text-amber-500" />
+             <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex items-center justify-center shrink-0">
+                <CheckCircle2 size={16} className="text-emerald-500" />
              </div>
-             <span>AI identified <strong className="text-zinc-800 dark:text-zinc-200 text-base mx-1 font-mono">0</strong> key business capabilities from PRD.</span>
+             <span>AI identified <strong className="text-zinc-800 dark:text-zinc-200 text-base mx-1 font-mono">{MOCK_REQUIREMENTS.length}</strong> key business capabilities from PRD.</span>
            </div>
-           <Badge variant="warning" className="bg-zinc-50 dark:bg-zinc-900">No Data</Badge>
+           <Badge variant="success" className="bg-zinc-50 dark:bg-zinc-900">Analysis Complete</Badge>
         </div>
 
-        {/* Empty State Main Area */}
-        <div className="flex-1 min-h-[300px] border-2 border-dashed border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-12 flex flex-col items-center justify-center text-center bg-white/50 dark:bg-zinc-950/50 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900/40 via-zinc-950/0 to-zinc-950/0 pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100"></div>
-            
-            <div className="w-20 h-20 rounded-3xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mb-6 shadow-2xl relative z-10">
-                <ShieldAlert size={36} className="text-zinc-500 dark:text-zinc-400 dark:text-zinc-600 dark:text-zinc-400" />
-            </div>
-            
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-3 relative z-10 tracking-tight">No PRD Uploaded</h3>
-            
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 dark:text-zinc-400 max-w-md mb-8 leading-relaxed relative z-10">
-                You haven&apos;t uploaded or successfully parsed a Product Requirements Document yet. 
-                Please return to the PRD Intake phase to upload your file and begin the analysis.
-            </p>
-            
-            <div className="flex items-center gap-4 relative z-10">
-                <Button 
-                    variant="secondary" 
-                    icon={ArrowLeft} 
-                    onClick={() => setActiveRoute('dashboard')}
-                    className="px-5 py-2.5 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-100 dark:bg-zinc-800"
-                >
-                    Back
-                </Button>
-                <Button 
-                    variant="primary" 
-                    icon={FileText} 
-                    onClick={() => setActiveRoute('prd-intake')}
-                    className="px-6 py-2.5 shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]"
-                >
-                    Go to PRD Intake
-                </Button>
-            </div>
+        {/* Coverage Content */}
+        <div className="flex-1 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden bg-white/50 dark:bg-zinc-950/50 shadow-sm">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-zinc-50 dark:bg-zinc-900/80 border-b border-zinc-200 dark:border-zinc-800">
+              <tr>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Requirement</th>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Risk</th>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">AI Confidence</th>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/50 text-zinc-600 dark:text-zinc-400">
+              {MOCK_REQUIREMENTS.map((req) => (
+                <tr key={req.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50 spring-transition">
+                  <td className="px-4 py-3">
+                    <div className="flex flex-col">
+                      <span className="font-mono text-xs text-indigo-600 dark:text-indigo-400 mb-1">{req.id}</span>
+                      <span className="text-zinc-800 dark:text-zinc-200 font-medium">{req.title}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge variant={req.risk === 'High' ? 'danger' : req.risk === 'Medium' ? 'warning' : 'success'}>
+                      {req.risk}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-500" style={{ width: \`\${req.aiConf}%\` }}></div>
+                      </div>
+                      <span className="text-xs">{req.aiConf}%</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge variant={req.status === 'approved' ? 'success' : req.status === 'review' ? 'warning' : 'default'}>
+                      {req.status}
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* Footer Actions */}
         <div className="flex justify-between items-center pt-6 border-t border-zinc-200 dark:border-zinc-800/80 mt-auto shrink-0">
             <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 dark:text-zinc-400  font-medium">
-                <Clock size={16} className="text-zinc-500 dark:text-zinc-400 dark:text-zinc-600 dark:text-zinc-400 animate-pulse" /> 
-                Waiting for analysis...
+                <CheckCircle2 size={16} className="text-emerald-500" /> 
+                Coverage audit finished
             </div>
             <Button 
               variant="primary" 
-              className="opacity-50 pointer-events-none px-6 py-2.5" 
+              className="px-6 py-2.5 shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_25px_rgba(99,102,241,0.4)]" 
               icon={Sparkles}
+              onClick={() => setActiveRoute('test-catalogue')}
             >
                 Generate Test Cases
             </Button>
@@ -903,39 +933,79 @@ const TestCataloguePage = ({ setActiveRoute }: { setActiveRoute: (route: string)
           </div>
         </div>
 
-        {/* Empty State Main Area */}
-        <div className="flex-1 min-h-[400px] border-2 border-dashed border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-12 flex flex-col items-center justify-center text-center bg-white/50 dark:bg-zinc-950/50 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900/40 via-zinc-950/0 to-zinc-950/0 pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100"></div>
-            
-            <div className="w-20 h-20 rounded-3xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mb-6 shadow-2xl relative z-10">
-                <Library size={36} className="text-zinc-500 dark:text-zinc-400 dark:text-zinc-600 dark:text-zinc-400" />
+        {/* Action Header */}
+        <div className="flex justify-between items-center bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm mb-2">
+            <div className="flex items-center gap-3">
+               <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center shrink-0">
+                  <Library size={16} className="text-indigo-500" />
+               </div>
+               <span className="text-sm text-zinc-600 dark:text-zinc-400">Generated <strong className="text-zinc-800 dark:text-zinc-200">{MOCK_TEST_CASES.length}</strong> test cases for the defined capabilities.</span>
             </div>
-            
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-3 relative z-10 tracking-tight">No PRD Uploaded</h3>
-            
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 dark:text-zinc-400 max-w-md mb-8 leading-relaxed relative z-10">
-                You haven&apos;t uploaded or successfully parsed a Product Requirements Document yet. 
-                Please return to the PRD Intake phase to upload your document before reviewing the test catalogue.
-            </p>
-            
-            <div className="flex items-center gap-4 relative z-10">
-                <Button 
-                    variant="secondary" 
-                    icon={ArrowLeft} 
-                    onClick={() => setActiveRoute('coverage-audit')}
-                    className="px-5 py-2.5 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-100 dark:bg-zinc-800"
-                >
-                    Back
-                </Button>
-                <Button 
-                    variant="primary" 
-                    icon={FileText} 
-                    onClick={() => setActiveRoute('prd-intake')}
-                    className="px-6 py-2.5 shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]"
-                >
-                    Go to PRD Intake
-                </Button>
+            <div className="flex gap-2">
+                <Button variant="secondary" icon={Filter} className="text-xs">Filter</Button>
+                <Button variant="secondary" icon={Plus} className="text-xs">Add Manual Case</Button>
             </div>
+        </div>
+
+        {/* Test Catalogue Content */}
+        <div className="flex-1 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden bg-white/50 dark:bg-zinc-950/50 shadow-sm">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-zinc-50 dark:bg-zinc-900/80 border-b border-zinc-200 dark:border-zinc-800">
+              <tr>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Test Case</th>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Priority</th>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Type</th>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Auto</th>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/50 text-zinc-600 dark:text-zinc-400">
+              {MOCK_TEST_CASES.map((tc) => (
+                <tr key={tc.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50 spring-transition">
+                  <td className="px-4 py-3">
+                    <div className="flex flex-col">
+                      <span className="font-mono text-xs text-indigo-600 dark:text-indigo-400 mb-1">{tc.id}</span>
+                      <span className="text-zinc-800 dark:text-zinc-200 font-medium">{tc.title}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge variant={tc.priority === 'P0' ? 'danger' : tc.priority === 'P1' ? 'warning' : 'default'}>
+                      {tc.priority}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3">{tc.type}</td>
+                  <td className="px-4 py-3">
+                    {tc.auto ? <Bot size={16} className="text-indigo-500" /> : <User size={16} className="text-zinc-400" />}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge variant={tc.status === 'ready' ? 'success' : tc.status === 'draft' ? 'default' : 'warning'}>
+                      {tc.status}
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="flex justify-between items-center pt-6 border-t border-zinc-200 dark:border-zinc-800/80 mt-auto shrink-0">
+            <Button 
+                variant="secondary" 
+                icon={ArrowLeft} 
+                onClick={() => setActiveRoute('coverage-audit')}
+                className="px-5 py-2.5 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-100 dark:bg-zinc-800"
+            >
+                Back
+            </Button>
+            <Button 
+                variant="primary" 
+                icon={Link2} 
+                onClick={() => setActiveRoute('qase-integration')}
+                className="px-6 py-2.5 shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]"
+            >
+                Sync to Qase
+            </Button>
         </div>
       </div>
     </div>
@@ -981,37 +1051,34 @@ const QaseIntegrationPage = ({ setActiveRoute }: { setActiveRoute: (route: strin
           </div>
         </div>
 
-        {/* Empty State Main Area */}
-        <div className="flex-1 min-h-[400px] border-2 border-dashed border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-12 flex flex-col items-center justify-center text-center bg-white/50 dark:bg-zinc-950/50 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900/40 via-zinc-950/0 to-zinc-950/0 pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100"></div>
-            
-            <div className="w-20 h-20 rounded-3xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mb-6 shadow-2xl relative z-10">
-                <RefreshCcw size={36} className="text-zinc-500 dark:text-zinc-400 dark:text-zinc-600 dark:text-zinc-400" />
+        {/* Qase Sync Content */}
+        <div className="flex-1 min-h-[400px] border border-emerald-500/20 rounded-2xl p-12 flex flex-col items-center justify-center text-center bg-emerald-50/30 dark:bg-emerald-950/10 relative overflow-hidden group shadow-[inset_0_0_40px_rgba(16,185,129,0.05)]">
+            <div className="w-20 h-20 rounded-3xl bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-500/30 flex items-center justify-center mb-6 shadow-2xl relative z-10 text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 size={40} />
             </div>
             
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-3 relative z-10 tracking-tight">No Test Cases Available</h3>
+            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-3 relative z-10 tracking-tight">Successfully Synced to Qase</h3>
             
             <p className="text-sm text-zinc-500 dark:text-zinc-400 dark:text-zinc-400 max-w-md mb-8 leading-relaxed relative z-10">
-                You haven&apos;t generated or approved any test cases yet. 
-                Please complete the PRD Intake and Test Catalogue Review phases to generate test cases before syncing to Qase.
+                {MOCK_TEST_CASES.length} test cases have been successfully synced to the Qase project repository. You can now view and execute them directly on the Qase platform.
             </p>
             
             <div className="flex items-center gap-4 relative z-10">
                 <Button 
                     variant="secondary" 
                     icon={ArrowLeft} 
-                    onClick={() => setActiveRoute('test-catalogue')}
-                    className="px-5 py-2.5 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-100 dark:bg-zinc-800"
+                    onClick={() => setActiveRoute('dashboard')}
+                    className="px-5 py-2.5 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                 >
-                    Back to Catalogue
+                    Back to Dashboard
                 </Button>
                 <Button 
                     variant="primary" 
-                    icon={FileText} 
-                    onClick={() => setActiveRoute('prd-intake')}
-                    className="px-6 py-2.5 shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]"
+                    icon={LayoutDashboard} 
+                    onClick={() => setActiveRoute('dashboard')}
+                    className="px-6 py-2.5 shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] bg-emerald-600 hover:bg-emerald-500"
                 >
-                    Go to PRD Intake
+                    Finish
                 </Button>
             </div>
         </div>
@@ -1495,7 +1562,7 @@ export default function App() {
       case 'dashboard':
         return <DashboardPage />;
       case 'prd-intake':
-        return <PRDIntakePage />;
+        return <PRDIntakePage setActiveRoute={setActiveRoute} />;
       case 'coverage-audit':
         return <CoverageAuditPage setActiveRoute={setActiveRoute} />;
       case 'test-catalogue':
