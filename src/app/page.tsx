@@ -857,7 +857,7 @@ const CoverageAuditPage = ({ setActiveRoute }: { setActiveRoute: (route: string)
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-indigo-500" style={{ width: \`\${req.aiConf}%\` }}></div>
+                        <div className="h-full bg-indigo-500" style={{ width: `${req.aiConf}%` }}></div>
                       </div>
                       <span className="text-xs">{req.aiConf}%</span>
                     </div>

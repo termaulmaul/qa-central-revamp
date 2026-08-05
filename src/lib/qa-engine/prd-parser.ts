@@ -37,7 +37,7 @@ export function extractFeatures(text: string): Feature[] {
   const features: Feature[] = []
 
   // Strategy 1: Multiline regex pattern (primary)
-  const featurePattern = /^F(\d+)\s*[—–-]\s*([^:]+):\s*(.+?)(?=^F\d+|$)/gms
+  const featurePattern = /^F(\d+)\s*[—–-]\s*([^:]+):\s*([\s\S]+?)(?=^F\d+|$)/gm
   let match
 
   while ((match = featurePattern.exec(text)) !== null) {
