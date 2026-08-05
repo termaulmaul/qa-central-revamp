@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   FileText,
   UploadCloud,
@@ -16,7 +16,6 @@ import {
   Link2,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/Badge';
 
 export function PRDIntakePage() {
   const [selectedPlatform, setSelectedPlatform] = useState('MI Android');
@@ -33,11 +32,13 @@ export function PRDIntakePage() {
     { id: 'ITS', icon: Database },
   ];
 
-  const steps = [
-    { id: 1, label: 'PRD Intake', icon: FileText, status: 'current' as const },
-    { id: 2, label: 'Coverage Audit', icon: ShieldCheck, status: 'pending' as const },
-    { id: 3, label: 'Test Catalogue', icon: Library, status: 'pending' as const },
-    { id: 4, label: 'Qase Integration', icon: Link2, status: 'pending' as const },
+  type StepStatus = 'current' | 'pending' | 'completed';
+
+  const steps: Array<{ id: number; label: string; icon: typeof FileText; status: StepStatus }> = [
+    { id: 1, label: 'PRD Intake', icon: FileText, status: 'current' },
+    { id: 2, label: 'Coverage Audit', icon: ShieldCheck, status: 'pending' },
+    { id: 3, label: 'Test Catalogue', icon: Library, status: 'pending' },
+    { id: 4, label: 'Qase Integration', icon: Link2, status: 'pending' },
   ];
 
   return (
@@ -58,9 +59,9 @@ export function PRDIntakePage() {
                     ${
                       step.status === 'current'
                         ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]'
-                        : step.status === 'completed'
-                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400'
-                        : 'border-zinc-800 bg-zinc-900 text-zinc-500'
+                        : step.status === 'pending'
+                        ? 'border-zinc-800 bg-zinc-900 text-zinc-500'
+                        : 'border-emerald-500 bg-emerald-500/10 text-emerald-400'
                     }`}
                   >
                     {step.status === 'completed' ? (

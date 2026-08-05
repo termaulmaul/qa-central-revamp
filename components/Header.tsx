@@ -1,6 +1,4 @@
 'use client';
-
-import React from 'react';
 import { Search, Bell, LogOut } from 'lucide-react';
 import { Badge } from './ui/Badge';
 import { IconButton } from './ui/Button';

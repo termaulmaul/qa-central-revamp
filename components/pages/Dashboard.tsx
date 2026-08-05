@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { BarChart3, TrendingUp, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 
@@ -18,19 +17,6 @@ export function Dashboard() {
     { id: 'RQ-1044', title: 'Session timeout after 15 minutes of inactivity', risk: 'Low', coverage: 100, status: 'approved' },
     { id: 'RQ-1045', title: 'Password reset flow with email OTP', risk: 'Medium', coverage: 15, status: 'draft' },
   ];
-
-  const getRiskColor = (risk: string) => {
-    switch (risk) {
-      case 'High':
-        return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
-      case 'Medium':
-        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-      case 'Low':
-        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-      default:
-        return 'bg-zinc-800 text-zinc-300 border-zinc-700';
-    }
-  };
 
   return (
     <div className="flex flex-col h-full w-full bg-zinc-950 overflow-y-auto">
