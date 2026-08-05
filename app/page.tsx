@@ -22,6 +22,65 @@ const MOCK_REQUIREMENTS = [
   { id: 'RQ-1045', title: 'Password reset flow with email OTP', risk: 'Medium', coverage: 15, aiConf: 60, status: 'draft' },
 ];
 
+// Global Styles with Design Tokens
+const GlobalStyles = () => (
+  <style dangerouslySetInnerHTML={{__html: `
+    :root {
+      --surface-base: #09090B;        
+      --surface-raised: #18181B;      
+      --surface-overlay: #27272A;     
+      --surface-sunken: #000000;      
+      
+      --border-subtle: #27272A;
+      --border-default: #3F3F46;
+      --border-strong: #52525B;
+      --border-brand: #6366F1;        
+    
+      --text-primary: #FAFAFA;
+      --text-secondary: #A1A1AA;
+      --text-tertiary: #71717A;       
+      
+      --brand-primary: #6366F1;
+      --brand-hover: #4F46E5;
+      
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #F43F5E;
+    }
+    body {
+      background-color: var(--surface-base);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Custom Spring-like Transition */
+    .spring-transition {
+      transition-property: all;
+      transition-duration: 220ms;
+      transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--surface-overlay);
+      border-radius: 4px;
+      border: 2px solid var(--surface-base);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-default);
+    }
+  `}} />
+);
+
 // Badge Component
 const Badge = ({ children, variant = 'default', className = '' }) => {
   const variants = {
@@ -486,30 +545,34 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-zinc-950 text-zinc-100 font-sans overflow-hidden">
-      <Sidebar
-        isCollapsed={isSidebarCollapsed}
-        setIsCollapsed={setIsSidebarCollapsed}
-        activeRoute={activeRoute}
-        setActiveRoute={setActiveRoute}
-      />
+    <>
+      <GlobalStyles />
+      <div className="flex h-screen w-screen bg-zinc-950 text-zinc-100 font-sans overflow-hidden selection:bg-indigo-500/30">
+        <Sidebar
+          isCollapsed={isSidebarCollapsed}
+          setIsCollapsed={setIsSidebarCollapsed}
+          activeRoute={activeRoute}
+          setActiveRoute={setActiveRoute}
+        />
 
-      <main className="flex-1 flex flex-col min-w-0 bg-zinc-950 relative shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-10">
-        <Header activeRoute={activeRoute} />
-        <div className="flex-1 relative overflow-hidden">
-          {renderContent()}
-        </div>
+        <main className="flex-1 flex flex-col min-w-0 bg-zinc-950 relative shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-10">
+          <Header activeRoute={activeRoute} />
+          <div className="flex-1 relative overflow-hidden">
+            {renderContent()}
+          </div>
 
-        <footer className="h-6 border-t border-zinc-800 bg-zinc-950 flex items-center px-4 justify-between text-[10px] text-zinc-500 font-mono shrink-0">
-          <div className="flex gap-4">
-            <span className="flex items-center gap-1"><CheckCircle2 size={10} /> All systems operational</span>
-          </div>
-          <div className="flex gap-4">
-            <span>Qase Sync: 2 mins ago</span>
-            <span>Latency: 42ms</span>
-          </div>
-        </footer>
-      </main>
-    </div>
+          <footer className="h-6 border-t border-zinc-800 bg-zinc-950 flex items-center px-4 justify-between text-[10px] text-zinc-500 font-mono shrink-0 relative z-20">
+            <div className="flex gap-4">
+              <span className="flex items-center gap-1"><CheckCircle2 size={10} className="text-emerald-500"/> All systems operational</span>
+              <span>Workspace: default-ws-1</span>
+            </div>
+            <div className="flex gap-4">
+              <span>Qase Sync: 2 mins ago</span>
+              <span>Latency: 42ms</span>
+            </div>
+          </footer>
+        </main>
+      </div>
+    </>
   );
 }
