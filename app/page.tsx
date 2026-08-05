@@ -2,16 +2,11 @@
 
 import { useState } from 'react';
 import {
-  Search, LayoutGrid, Sparkles, Code2,
-  CheckCircle2, BarChart3, Settings, Database,
-  ChevronRight, ChevronLeft, Bell, User, MoreHorizontal,
-  Filter, Plus, Play, GitPullRequest, ShieldAlert,
-  MessageSquare, FileCode2, Zap, Send, RotateCcw, Copy,
+  Search, Sparkles, CheckCircle2, BarChart3, Settings,
+  ChevronRight, ChevronLeft, Bell, User,
   LayoutDashboard, FileText, ShieldCheck, Library, RefreshCcw,
-  UploadCloud, Globe, LogOut, Check, Link2, Smartphone, Monitor,
-  AlertCircle, ArrowLeft, Clock, ChevronDown,
-  SlidersHorizontal, Activity, Cpu, Terminal, Bot,
-  Key, Server, BookOpen, Save, Shield
+  UploadCloud, LogOut, Check, Link2, Smartphone, Monitor,
+  ChevronDown, Clock, AlertCircle, ArrowLeft
 } from 'lucide-react';
 
 // Mock Data
@@ -22,64 +17,7 @@ const MOCK_REQUIREMENTS = [
   { id: 'RQ-1045', title: 'Password reset flow with email OTP', risk: 'Medium', coverage: 15, aiConf: 60, status: 'draft' },
 ];
 
-// Global Styles with Design Tokens
-const GlobalStyles = () => (
-  <style dangerouslySetInnerHTML={{__html: `
-    :root {
-      --surface-base: #09090B;        
-      --surface-raised: #18181B;      
-      --surface-overlay: #27272A;     
-      --surface-sunken: #000000;      
-      
-      --border-subtle: #27272A;
-      --border-default: #3F3F46;
-      --border-strong: #52525B;
-      --border-brand: #6366F1;        
-    
-      --text-primary: #FAFAFA;
-      --text-secondary: #A1A1AA;
-      --text-tertiary: #71717A;       
-      
-      --brand-primary: #6366F1;
-      --brand-hover: #4F46E5;
-      
-      --success: #10B981;
-      --warning: #F59E0B;
-      --danger: #F43F5E;
-    }
-    body {
-      background-color: var(--surface-base);
-      color: var(--text-primary);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
-    /* Custom Spring-like Transition */
-    .spring-transition {
-      transition-property: all;
-      transition-duration: 220ms;
-      transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    /* Scrollbar Styling */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: var(--surface-overlay);
-      border-radius: 4px;
-      border: 2px solid var(--surface-base);
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--border-default);
-    }
-  `}} />
-);
+
 
 // Badge Component
 const Badge = ({ children, variant = 'default', className = '' }) => {
@@ -469,28 +407,38 @@ const PRDIntakePage = () => {
 };
 
 // Empty Page Component
-const EmptyPage = ({ title, icon: Icon, setActiveRoute, to = 'prd-intake' }) => (
-  <div className="flex h-full w-full bg-zinc-950 overflow-y-auto">
-    <div className="max-w-5xl mx-auto w-full p-8 flex flex-col gap-8 pb-20 h-full">
-      <div className="flex-1 min-h-[400px] border-2 border-dashed border-zinc-800/80 rounded-2xl p-12 flex flex-col items-center justify-center text-center bg-zinc-950/50">
-        <div className="w-20 h-20 rounded-3xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6 shadow-2xl">
-          <Icon size={36} className="text-zinc-600" />
-        </div>
-        <h3 className="text-xl font-semibold text-zinc-100 mb-3">{title}</h3>
-        <p className="text-sm text-zinc-400 max-w-md mb-8">
-          Please complete the PRD Intake phase first.
-        </p>
-        <Button
-          variant="primary"
-          icon={FileText}
-          onClick={() => setActiveRoute(to)}
-          className="px-6 py-2.5"
-        >
-          Go to PRD Intake
-        </Button>
+const EmptyPage = ({ title, icon: Icon }) => (
+  <div className="flex h-full w-full bg-zinc-950 overflow-y-auto items-center justify-center">
+    <div className="text-center">
+      <div className="w-20 h-20 rounded-3xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6 mx-auto">
+        <Icon size={36} className="text-zinc-600" />
       </div>
+      <h3 className="text-xl font-semibold text-zinc-100 mb-3">{title}</h3>
+      <p className="text-sm text-zinc-400 max-w-md">
+        Please complete the PRD Intake phase first.
+      </p>
     </div>
   </div>
+);
+
+// Coverage Audit Page
+const CoverageAuditPage = () => (
+  <EmptyPage title="Coverage Audit" icon={ShieldCheck} />
+);
+
+// Test Catalogue Page
+const TestCataloguePage = () => (
+  <EmptyPage title="Test Catalogue" icon={Library} />
+);
+
+// Qase Integration Page
+const QaseIntegrationPage = () => (
+  <EmptyPage title="Qase Integration" icon={RefreshCcw} />
+);
+
+// AI Playground Page
+const AIPlaygroundPage = () => (
+  <EmptyPage title="AI Playground" icon={Sparkles} />
 );
 
 // Settings Page
@@ -530,13 +478,13 @@ export default function App() {
       case 'prd-intake':
         return <PRDIntakePage />;
       case 'coverage-audit':
-        return <EmptyPage title="Coverage Audit" icon={ShieldCheck} setActiveRoute={setActiveRoute} />;
+        return <CoverageAuditPage />;
       case 'test-catalogue':
-        return <EmptyPage title="Test Catalogue" icon={Library} setActiveRoute={setActiveRoute} />;
+        return <TestCataloguePage />;
       case 'qase-integration':
-        return <EmptyPage title="Qase Integration" icon={RefreshCcw} setActiveRoute={setActiveRoute} />;
+        return <QaseIntegrationPage />;
       case 'ai-playground':
-        return <EmptyPage title="AI Playground" icon={Sparkles} setActiveRoute={setActiveRoute} />;
+        return <AIPlaygroundPage />;
       case 'settings':
         return <SettingsPage />;
       default:
@@ -545,34 +493,23 @@ export default function App() {
   };
 
   return (
-    <>
-      <GlobalStyles />
-      <div className="flex h-screen w-screen bg-zinc-950 text-zinc-100 font-sans overflow-hidden selection:bg-indigo-500/30">
-        <Sidebar
-          isCollapsed={isSidebarCollapsed}
-          setIsCollapsed={setIsSidebarCollapsed}
-          activeRoute={activeRoute}
-          setActiveRoute={setActiveRoute}
-        />
-
-        <main className="flex-1 flex flex-col min-w-0 bg-zinc-950 relative shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-10">
-          <Header activeRoute={activeRoute} />
-          <div className="flex-1 relative overflow-hidden">
-            {renderContent()}
-          </div>
-
-          <footer className="h-6 border-t border-zinc-800 bg-zinc-950 flex items-center px-4 justify-between text-[10px] text-zinc-500 font-mono shrink-0 relative z-20">
-            <div className="flex gap-4">
-              <span className="flex items-center gap-1"><CheckCircle2 size={10} className="text-emerald-500"/> All systems operational</span>
-              <span>Workspace: default-ws-1</span>
-            </div>
-            <div className="flex gap-4">
-              <span>Qase Sync: 2 mins ago</span>
-              <span>Latency: 42ms</span>
-            </div>
-          </footer>
-        </main>
-      </div>
-    </>
+    <div className="flex h-screen w-screen bg-zinc-950 text-zinc-100 overflow-hidden">
+      <Sidebar 
+        isCollapsed={isSidebarCollapsed} 
+        setIsCollapsed={setIsSidebarCollapsed} 
+        activeRoute={activeRoute}
+        setActiveRoute={setActiveRoute}
+      />
+      <main className="flex-1 flex flex-col bg-zinc-950">
+        <Header activeRoute={activeRoute} />
+        <div className="flex-1 overflow-hidden">
+          {renderContent()}
+        </div>
+        <footer className="h-6 border-t border-zinc-800 bg-zinc-950 flex items-center px-4 justify-between text-[10px] text-zinc-500 font-mono shrink-0">
+          <span>All systems operational</span>
+          <span>Qase Sync: 2 mins ago</span>
+        </footer>
+      </main>
+    </div>
   );
 }
