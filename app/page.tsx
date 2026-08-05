@@ -1,17 +1,49 @@
+'use client';
+
+import React, { useState } from 'react';
+import { Sidebar } from '@/components/Sidebar';
+import { Header } from '@/components/Header';
+import { Dashboard } from '@/components/pages/Dashboard';
+import { PRDIntakePage } from '@/components/pages/PRDIntakePage';
+import { CoverageAuditPage } from '@/components/pages/CoverageAuditPage';
+import { TestCataloguePage } from '@/components/pages/TestCataloguePage';
+import { SettingsPage } from '@/components/pages/SettingsPage';
+
 export default function Home() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [activeRoute, setActiveRoute] = useState('dashboard');
+
+  const renderPage = () => {
+    switch (activeRoute) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'prd-intake':
+        return <PRDIntakePage />;
+      case 'coverage-audit':
+        return <CoverageAuditPage />;
+      case 'test-catalogue':
+        return <TestCataloguePage />;
+      case 'settings':
+        return <SettingsPage />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-white">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-black mb-4">
-          QA Central Revamp
-        </h1>
-        <p className="text-gray-600 text-lg">
-          Quality Assurance Management System
-        </p>
-        <p className="text-gray-500 mt-8 text-sm">
-          Running on Next.js with Bun
-        </p>
+    <div className="flex h-screen w-screen overflow-hidden bg-zinc-950">
+      <Sidebar 
+        isCollapsed={isCollapsed} 
+        setIsCollapsed={setIsCollapsed} 
+        activeRoute={activeRoute}
+        setActiveRoute={setActiveRoute}
+      />
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <Header activeRoute={activeRoute} />
+        <main className="flex-1 overflow-auto">
+          {renderPage()}
+        </main>
       </div>
-    </main>
+    </div>
   );
 }
