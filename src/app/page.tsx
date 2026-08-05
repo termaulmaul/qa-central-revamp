@@ -12,10 +12,12 @@ import {
   AlertCircle, ArrowLeft, Clock, ChevronDown,
   SlidersHorizontal, Activity, Cpu, Terminal, Bot,
   Key, Server, BookOpen, Save, Shield, Sun, Moon,
-  X, Edit3, Trash2
+  X, Edit3, Trash2, Network, Loader, Download
 } from 'lucide-react';
 import { QAEngine, type CoverageItem, type TestCase } from '../lib/qa-engine/qa-engine';
 import { PDFParser } from '../lib/pdf-parser';
+import { QaseAPI, type QaseSuite, type QaseProject } from '../lib/qase-api';
+import { useQaseState, updateQaseState } from '../lib/qase-store';
 
 // --- MOCK DATA ---
 const MOCK_REQUIREMENTS = [
@@ -1389,36 +1391,284 @@ const TestCataloguePage = ({ setActiveRoute, testCases = [], setTestCases }: { s
 };
 
 const QaseIntegrationPage = ({ setActiveRoute, testCases = [] }: { setActiveRoute: (route: string) => void, testCases?: any[] }) => {
+  const { token = '' } = useQaseState()
+  const setToken = (newToken: string) => updateQaseState({ token: newToken })
+  const [testing, setTesting] = useState(false)
+  const [tokenValid, setTokenValid] = useState(false)
+  const [projects, setProjects] = useState<QaseProject[]>([])
+  const [selectedProject, setSelectedProject] = useState('')
+  const [isCreatingProject, setIsCreatingProject] = useState(false)
+  const [newProjectTitle, setNewProjectTitle] = useState('')
+  const [newProjectCode, setNewProjectCode] = useState('')
+  const [creatingProjectLoader, setCreatingProjectLoader] = useState(false)
+  const [suites, setSuites] = useState<QaseSuite[]>([])
+  const [selectedSuite, setSelectedSuite] = useState('')
+  const [loadingSuites, setLoadingSuites] = useState(false)
+  const [isCreatingSuite, setIsCreatingSuite] = useState(false)
+  const [newSuiteTitle, setNewSuiteTitle] = useState('')
+  const [creatingSuiteLoader, setCreatingSuiteLoader] = useState(false)
+  const [pushing, setPushing] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [errorToast, setErrorToast] = useState<string | null>(null)
+  const [successToast, setSuccessToast] = useState<string | null>(null)
+
   const steps = [
-    { id: 1, label: 'PRD Intake', icon: FileText, status: 'pending' },
-    { id: 2, label: 'Coverage Audit', icon: ShieldCheck, status: 'pending' },
-    { id: 3, label: 'Test Catalogue', icon: Library, status: 'pending' },
+    { id: 1, label: 'PRD Intake', icon: FileText, status: 'completed' },
+    { id: 2, label: 'Coverage Audit', icon: ShieldCheck, status: 'completed' },
+    { id: 3, label: 'Test Catalogue', icon: Library, status: 'completed' },
     { id: 4, label: 'Qase Integration', icon: Link2, status: 'current' }
   ];
 
+  const showToast = (msg: string, type: 'error' | 'success') => {
+    if (type === 'error') setErrorToast(msg)
+    else setSuccessToast(msg)
+    setTimeout(() => { setErrorToast(null); setSuccessToast(null) }, 3000)
+  }
+
+  useEffect(() => {
+    if (token.trim() && !tokenValid && !testing) {
+      handleTestConnection()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (selectedProject && tokenValid) {
+      setLoadingSuites(true)
+      const api = new QaseAPI(token)
+      api.getSuites(selectedProject)
+        .then(setSuites)
+        .catch((err) => {
+          console.error(err)
+          showToast('Failed to fetch suites', 'error')
+        })
+        .finally(() => setLoadingSuites(false))
+    } else {
+      setSuites([])
+      setSelectedSuite('')
+    }
+  }, [selectedProject, tokenValid, token])
+
+  const handleTestConnection = async () => {
+    if (!token.trim()) {
+      showToast('Please enter a token', 'error')
+      return
+    }
+    setTesting(true)
+    try {
+      const api = new QaseAPI(token)
+      const isValid = await api.testConnection()
+      if (isValid) {
+        const projectList = await api.getProjects()
+        setProjects(projectList)
+        setTokenValid(true)
+        showToast('Connection successful!', 'success')
+      } else {
+        showToast('Connection failed', 'error')
+        setTokenValid(false)
+      }
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Connection failed', 'error')
+      setTokenValid(false)
+    } finally {
+      setTesting(false)
+    }
+  }
+
+  const handleCreateProject = async () => {
+    if (!newProjectTitle.trim() || !newProjectCode.trim()) {
+      showToast('Please enter project name and code', 'error')
+      return
+    }
+    setCreatingProjectLoader(true)
+    try {
+      const api = new QaseAPI(token)
+      const newProject = await api.createProject(newProjectTitle, newProjectCode)
+      setProjects((prev) => [...prev, newProject])
+      setSelectedProject(newProject.code)
+      setIsCreatingProject(false)
+      setNewProjectTitle('')
+      setNewProjectCode('')
+      showToast('Project created successfully', 'success')
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to create project', 'error')
+    } finally {
+      setCreatingProjectLoader(false)
+    }
+  }
+
+  const handleCreateSuite = async () => {
+    if (!newSuiteTitle.trim()) {
+      showToast('Please enter a suite name', 'error')
+      return
+    }
+    setCreatingSuiteLoader(true)
+    try {
+      const api = new QaseAPI(token)
+      const newSuite = await api.createSuite(selectedProject, newSuiteTitle)
+      setSuites((prev) => [...prev, newSuite])
+      setSelectedSuite(newSuite.id.toString())
+      setIsCreatingSuite(false)
+      setNewSuiteTitle('')
+      showToast('Suite created successfully', 'success')
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to create suite', 'error')
+    } finally {
+      setCreatingSuiteLoader(false)
+    }
+  }
+
+  const casesToPush = testCases.map((tc) => ({
+    title: tc.title,
+    description: tc.type,
+    preconditions: tc.precondition,
+    postconditions: tc.postcondition,
+    priority: tc.priority === 'P0' || tc.priority === 'Critical' ? 1 : tc.priority === 'High' || tc.priority === 'P1' ? 2 : 3,
+    type: 2, 
+    behavior: tc.behavior === 'Positive' ? 2 : 3, 
+    suite_id: selectedSuite ? parseInt(selectedSuite) : undefined,
+    custom_field: { "6": "2", "7": "4" },
+    tags: tc.tags || [],
+    steps: tc.steps?.map((step: any) => ({
+      action: step.action,
+      expected_result: step.expectedResult,
+      data: step.data || '',
+    })) || [],
+  }))
+
+  const handlePushToQase = async () => {
+    let finalProjectCode = selectedProject
+    let finalSuiteId = selectedSuite
+
+    if (isCreatingProject && newProjectTitle.trim() && newProjectCode.trim()) {
+      setPushing(true)
+      try {
+        const api = new QaseAPI(token)
+        const newProject = await api.createProject(newProjectTitle, newProjectCode)
+        setProjects((prev) => [...prev, newProject])
+        finalProjectCode = newProject.code
+        setSelectedProject(newProject.code)
+        setIsCreatingProject(false)
+        setNewProjectTitle('')
+        setNewProjectCode('')
+      } catch (error) {
+        showToast('Failed to create project before pushing', 'error')
+        setPushing(false)
+        return
+      }
+    }
+
+    if (!token.trim() || !finalProjectCode.trim()) {
+      showToast('Please select a project', 'error')
+      setPushing(false)
+      return
+    }
+
+    if (isCreatingSuite && newSuiteTitle.trim()) {
+      setPushing(true)
+      try {
+        const api = new QaseAPI(token)
+        const newSuite = await api.createSuite(finalProjectCode, newSuiteTitle)
+        setSuites((prev) => [...prev, newSuite])
+        finalSuiteId = newSuite.id.toString()
+        setSelectedSuite(newSuite.id.toString())
+        setIsCreatingSuite(false)
+        setNewSuiteTitle('')
+      } catch (error) {
+        showToast('Failed to create suite before pushing', 'error')
+        setPushing(false)
+        return
+      }
+    }
+
+    setPushing(true)
+    try {
+      const api = new QaseAPI(token)
+      const finalCasesToPush = testCases.map((tc) => ({
+        title: tc.title,
+        description: tc.type,
+        preconditions: tc.precondition,
+        postconditions: tc.postcondition,
+        priority: tc.priority === 'P0' || tc.priority === 'Critical' ? 1 : tc.priority === 'High' || tc.priority === 'P1' ? 2 : 3,
+        type: 2,
+        behavior: tc.behavior === 'Positive' ? 2 : 3,
+        suite_id: finalSuiteId ? parseInt(finalSuiteId) : undefined,
+        custom_field: { "6": "2", "7": "4" },
+        tags: tc.tags || [],
+        steps: tc.steps?.map((step: any) => ({
+          action: step.action,
+          expected_result: step.expectedResult,
+          data: step.data || '',
+        })) || [],
+      }))
+
+      await api.bulkCreateTestCases(finalProjectCode, finalCasesToPush)
+      showToast(`Successfully pushed ${testCases.length} test cases to Qase!`, 'success')
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to push to Qase', 'error')
+    } finally {
+      setPushing(false)
+    }
+  }
+
+  const handleCopy = () => {
+    const json = JSON.stringify(casesToPush, null, 2)
+    navigator.clipboard.writeText(json)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleDownload = () => {
+    const json = JSON.stringify(casesToPush, null, 2)
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `test-cases-${Date.now()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
-    <div className="h-full w-full bg-white dark:bg-zinc-950 overflow-y-auto">
-      <div className="max-w-5xl mx-auto w-full p-8 flex flex-col gap-8 pb-20">
+    <div className="h-full w-full bg-white dark:bg-zinc-950 overflow-y-auto relative">
+      {(errorToast || successToast) && (
+        <div className={`fixed top-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded shadow-lg text-sm z-[200] text-white ${errorToast ? 'bg-red-500' : 'bg-emerald-500'}`}>
+            {errorToast || successToast}
+        </div>
+      )}
+      <div className="max-w-[1200px] mx-auto w-full p-8 flex flex-col gap-8 pb-20">
         
         {/* Header & Pipeline Workflow */}
         <div>
-          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-6">Qase Integration</h2>
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-500">Qase Integration</h2>
+              <p className="text-sm text-zinc-900 dark:text-zinc-100 mt-1">Push {testCases.length} test cases to Qase or download as JSON</p>
+            </div>
+            <Button 
+                variant="secondary" 
+                icon={ArrowLeft} 
+                onClick={() => setActiveRoute('test-catalogue')}
+                className="px-4 py-2 bg-white dark:bg-zinc-900 hover:bg-zinc-50 border border-zinc-200 dark:border-zinc-800"
+            >
+                Back
+            </Button>
+          </div>
           
-          <div className="flex items-center w-full relative mb-4">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-px bg-zinc-100 dark:bg-zinc-800 z-0"></div>
+          <div className="flex items-center w-full relative mb-8 max-w-5xl mx-auto">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-px bg-zinc-200 dark:bg-zinc-800 z-0"></div>
             <div className="w-full flex justify-between relative z-10">
               {steps.map((step, idx) => (
                 <div key={step.id} className="flex flex-col items-center gap-2 bg-white dark:bg-zinc-950 px-2">
-                  <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center spring-transition
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center spring-transition
                     ${step.status === 'current' 
-                      ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' 
-                      : step.status === 'completed'
-                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                        : 'border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'}`}
+                      ? 'bg-blue-600 text-white' 
+                      : step.status === 'completed' || step.status === 'pending'
+                        ? 'bg-white border border-green-500 text-green-500'
+                        : 'bg-white border border-zinc-300 text-zinc-400'}`}
                   >
-                    {step.status === 'completed' ? <Check size={18} /> : <step.icon size={18} />}
+                    {step.status === 'current' ? <Link2 size={14} /> : <Check size={14} />}
                   </div>
-                  <span className={`text-xs font-medium ${step.status === 'current' ? 'text-zinc-800 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400'}`}>
+                  <span className={`text-xs ${step.status === 'current' ? 'text-blue-600 font-medium' : 'text-green-500'}`}>
                     {step.label}
                   </span>
                 </div>
@@ -1427,37 +1677,165 @@ const QaseIntegrationPage = ({ setActiveRoute, testCases = [] }: { setActiveRout
           </div>
         </div>
 
-        {/* Qase Sync Content */}
-        <div className="flex-1 min-h-[400px] border border-emerald-500/20 rounded-2xl p-12 flex flex-col items-center justify-center text-center bg-emerald-50/30 dark:bg-emerald-950/10 relative overflow-hidden group shadow-[inset_0_0_40px_rgba(16,185,129,0.05)]">
-            <div className="w-20 h-20 rounded-3xl bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-500/30 flex items-center justify-center mb-6 shadow-2xl relative z-10 text-emerald-600 dark:text-emerald-400">
-                <CheckCircle2 size={40} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left Column: Qase Connection & Settings */}
+            <div className={`rounded-xl border ${tokenValid ? 'bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800/50' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800'} p-6 relative overflow-hidden flex flex-col justify-between`}>
+                {!tokenValid ? (
+                    <div className="flex flex-col h-full justify-center space-y-4">
+                        <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-medium pb-2 border-b border-zinc-100 dark:border-zinc-800">
+                            <Network size={18} /> Qase Authentication
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Qase API Token</label>
+                            <input
+                                type="password"
+                                value={token}
+                                onChange={(e) => setToken(e.target.value)}
+                                placeholder="Enter your Qase API token"
+                                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-zinc-800 dark:text-zinc-100"
+                            />
+                            <p className="text-xs text-zinc-500">Get your token from Qase Settings &rarr; API Tokens</p>
+                        </div>
+                        <Button 
+                            variant="primary" 
+                            onClick={handleTestConnection} 
+                            disabled={testing}
+                            className="w-full mt-4 justify-center bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+                        >
+                            {testing ? <><Loader size={16} className="animate-spin mr-2" /> Testing Connection...</> : 'Test Connection'}
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="flex flex-col h-full">
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-500 font-medium">
+                                <Check size={18} /> Connected to Qase
+                            </div>
+                            <Button 
+                                variant="primary" 
+                                onClick={handlePushToQase}
+                                disabled={pushing || (!selectedProject && !isCreatingProject)}
+                                className="bg-orange-300 hover:bg-orange-400 text-orange-900 border-none shadow-sm px-6 py-2"
+                            >
+                                {pushing ? <><Loader size={16} className="animate-spin mr-2" /> Pushing...</> : 'Push to Qase'}
+                            </Button>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-6 mt-auto">
+                            <div className="space-y-2">
+                                <label className="text-sm text-blue-600 dark:text-blue-500">Select Project</label>
+                                {isCreatingProject ? (
+                                    <div className="flex gap-2 bg-white dark:bg-zinc-900 rounded-md p-1 border border-zinc-200 dark:border-zinc-700">
+                                        <input 
+                                            type="text" 
+                                            value={newProjectTitle} 
+                                            onChange={(e) => setNewProjectTitle(e.target.value)} 
+                                            placeholder="Name" 
+                                            className="w-full text-sm outline-none px-2 py-1 bg-transparent dark:text-zinc-100" 
+                                        />
+                                        <input 
+                                            type="text" 
+                                            value={newProjectCode} 
+                                            onChange={(e) => setNewProjectCode(e.target.value.toUpperCase())} 
+                                            placeholder="CODE" 
+                                            className="w-16 text-sm outline-none px-2 py-1 border-l border-zinc-200 dark:border-zinc-700 bg-transparent uppercase dark:text-zinc-100" 
+                                        />
+                                        <button onClick={handleCreateProject} disabled={creatingProjectLoader} className="text-emerald-600 p-1 hover:bg-emerald-50 rounded">
+                                            {creatingProjectLoader ? <Loader size={14} className="animate-spin" /> : <Check size={14} />}
+                                        </button>
+                                        <button onClick={() => setIsCreatingProject(false)} className="text-red-500 p-1 hover:bg-red-50 rounded">
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex gap-2">
+                                        <select 
+                                            value={selectedProject} 
+                                            onChange={(e) => setSelectedProject(e.target.value)}
+                                            className="flex-1 px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md text-sm bg-white dark:bg-zinc-900 dark:text-zinc-100 focus:outline-none"
+                                        >
+                                            <option value="">Choose a project...</option>
+                                            {projects.map((p) => (
+                                                <option key={p.code} value={p.code}>{p.title} ({p.code})</option>
+                                            ))}
+                                        </select>
+                                        <Button variant="secondary" onClick={() => setIsCreatingProject(true)} className="px-3 bg-white dark:bg-zinc-900 shrink-0 border border-zinc-200 dark:border-zinc-700">
+                                            <Plus size={14} className="mr-1 font-bold" /> New Project
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-sm text-blue-600 dark:text-blue-500 flex items-center gap-2">
+                                    Select Suite {loadingSuites && <Loader size={12} className="animate-spin text-zinc-400" />}
+                                </label>
+                                {isCreatingSuite ? (
+                                    <div className="flex gap-2 bg-white dark:bg-zinc-900 rounded-md p-1 border border-zinc-200 dark:border-zinc-700">
+                                        <input 
+                                            type="text" 
+                                            value={newSuiteTitle} 
+                                            onChange={(e) => setNewSuiteTitle(e.target.value)} 
+                                            placeholder="Suite Name" 
+                                            className="w-full text-sm outline-none px-2 py-1 bg-transparent dark:text-zinc-100" 
+                                        />
+                                        <button onClick={handleCreateSuite} disabled={creatingSuiteLoader} className="text-emerald-600 p-1 hover:bg-emerald-50 rounded">
+                                            {creatingSuiteLoader ? <Loader size={14} className="animate-spin" /> : <Check size={14} />}
+                                        </button>
+                                        <button onClick={() => setIsCreatingSuite(false)} className="text-red-500 p-1 hover:bg-red-50 rounded">
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex gap-2">
+                                        <select 
+                                            value={selectedSuite} 
+                                            onChange={(e) => setSelectedSuite(e.target.value)}
+                                            disabled={!selectedProject || loadingSuites}
+                                            className="flex-1 px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md text-sm bg-white dark:bg-zinc-900 dark:text-zinc-100 focus:outline-none disabled:opacity-50"
+                                        >
+                                            <option value="">Root (No Suite)</option>
+                                            {suites.map((s) => (
+                                                <option key={s.id} value={s.id}>{s.parent_id ? '\u00A0\u00A0\u2514 ' : ''}{s.title}</option>
+                                            ))}
+                                        </select>
+                                        <Button variant="secondary" onClick={() => setIsCreatingSuite(true)} disabled={!selectedProject} className="px-3 bg-white dark:bg-zinc-900 shrink-0 border border-zinc-200 dark:border-zinc-700">
+                                            <Plus size={14} className="mr-1 font-bold" /> New Suite
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
-            
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-3 relative z-10 tracking-tight">Successfully Synced to Qase</h3>
-            
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-md mb-8 leading-relaxed relative z-10">
-                {testCases.length} test cases have been successfully synced to the Qase project repository. You can now view and execute them directly on the Qase platform.
-            </p>
-            
-            <div className="flex items-center gap-4 relative z-10">
-                <Button 
-                    variant="secondary" 
-                    icon={ArrowLeft} 
-                    onClick={() => setActiveRoute('dashboard')}
-                    className="px-5 py-2.5 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                >
-                    Back to Dashboard
-                </Button>
-                <Button 
-                    variant="primary" 
-                    icon={LayoutDashboard} 
-                    onClick={() => setActiveRoute('dashboard')}
-                    className="px-6 py-2.5 shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] bg-emerald-600 hover:bg-emerald-500"
-                >
-                    Finish
-                </Button>
+
+            {/* Right Column: JSON Preview */}
+            <div className="border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950 flex flex-col overflow-hidden">
+                <div className="p-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-500 font-semibold text-sm">
+                        <AlertCircle size={16} /> Export Data
+                    </div>
+                    <span className="text-sm font-semibold text-blue-600 dark:text-blue-500">{testCases.length} test cases prepared</span>
+                </div>
+                
+                <div className="flex-1 p-4 overflow-hidden relative">
+                    <pre className="text-[12px] font-mono text-zinc-800 dark:text-zinc-200 w-full h-[250px] overflow-auto whitespace-pre">
+                        {JSON.stringify(casesToPush, null, 2)}
+                    </pre>
+                </div>
+                
+                <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 flex gap-4 bg-zinc-50 dark:bg-zinc-900/30">
+                    <Button variant="secondary" onClick={handleCopy} className="flex-1 bg-white dark:bg-zinc-900 hover:bg-zinc-50 border border-zinc-200 dark:border-zinc-700 font-semibold flex items-center justify-center">
+                        <Copy size={16} className="mr-2" /> {copied ? 'Copied!' : 'Copy JSON'}
+                    </Button>
+                    <Button variant="secondary" onClick={handleDownload} className="flex-1 bg-white dark:bg-zinc-900 hover:bg-zinc-50 border border-zinc-200 dark:border-zinc-700 font-semibold flex items-center justify-center">
+                        <Download size={16} className="mr-2" /> Download
+                    </Button>
+                </div>
             </div>
         </div>
+
       </div>
     </div>
   );
