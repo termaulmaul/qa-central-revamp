@@ -11,7 +11,8 @@ import {
   UploadCloud, Globe, LogOut, Check, Link2, Smartphone, Monitor,
   AlertCircle, ArrowLeft, Clock, ChevronDown,
   SlidersHorizontal, Activity, Cpu, Terminal, Bot,
-  Key, Server, BookOpen, Save, Shield, Sun, Moon
+  Key, Server, BookOpen, Save, Shield, Sun, Moon,
+  X, Edit3, Trash2
 } from 'lucide-react';
 import { QAEngine, type CoverageItem, type TestCase } from '../lib/qa-engine/qa-engine';
 import { PDFParser } from '../lib/pdf-parser';
@@ -959,14 +960,237 @@ const CoverageAuditPage = ({
     </div>
   );
 };
+const EditTestCaseModal = ({ tc, onClose, onSave, onDelete }: { tc: any, onClose: () => void, onSave: (updatedTc: any) => void, onDelete?: (tc: any) => void }) => {
+  const [formData, setFormData] = useState<any>(tc);
 
-const TestCataloguePage = ({ setActiveRoute, testCases = [] }: { setActiveRoute: (route: string) => void, testCases?: any[] }) => {
+  useEffect(() => {
+    setFormData(tc);
+  }, [tc]);
+
+  const handleSave = () => {
+    if (formData) {
+      onSave(formData);
+      onClose();
+    }
+  };
+
+  const handleStepChange = (index: number, field: string, value: string) => {
+    setFormData((prev: any) => {
+      if (!prev) return prev;
+      const newSteps = [...prev.steps];
+      newSteps[index] = { ...newSteps[index], [field]: value };
+      return { ...prev, steps: newSteps };
+    });
+  };
+
+  const handleAddStep = () => {
+    setFormData((prev: any) => {
+      if (!prev) return prev;
+      return { ...prev, steps: [...(prev.steps || []), { action: '', expectedResult: '', data: '' }] };
+    });
+  };
+
+  const handleDeleteStep = (index: number) => {
+    setFormData((prev: any) => {
+      if (!prev) return prev;
+      const newSteps = [...prev.steps];
+      newSteps.splice(index, 1);
+      return { ...prev, steps: newSteps };
+    });
+  };
+
+  if (!tc || !formData) return null;
+
+  return (
+    <>
+      <div 
+        onClick={onClose} 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
+      />
+      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 overflow-y-auto">
+        <div className="bg-white dark:bg-zinc-950 w-full max-w-3xl flex flex-col rounded-xl shadow-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 relative max-h-[90vh]">
+          
+          <div className="flex items-center justify-between p-5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 shrink-0">
+            <div>
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{formData.tcId}</h3>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">{formData.suite || 'Uncategorized'}</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 bg-white dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700 spring-transition"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          <div className="p-6 overflow-y-auto flex-1 space-y-6">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Test Case Title</label>
+              <input
+                type="text"
+                value={formData.title || ''}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                className="w-full px-3 py-2.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Suite</label>
+                <input
+                  type="text"
+                  value={formData.suite || ''}
+                  onChange={(e) => setFormData({ ...formData, suite: e.target.value })}
+                  className="w-full px-3 py-2.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Type</label>
+                <input
+                  type="text"
+                  value={formData.type || ''}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                  className="w-full px-3 py-2.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Priority</label>
+                <select
+                  value={
+                    formData.priority === 'Critical' ? 'P0' :
+                    formData.priority === 'High' ? 'P1' :
+                    formData.priority === 'Medium' ? 'P2' :
+                    formData.priority === 'Low' ? 'P3' :
+                    (formData.priority || 'P2')
+                  }
+                  onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                  className="w-full px-3 py-2.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                >
+                  <option value="P0">P0 (Critical)</option>
+                  <option value="P1">P1 (High)</option>
+                  <option value="P2">P2 (Medium)</option>
+                  <option value="P3">P3 (Low)</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Behavior</label>
+                <select
+                  value={formData.behavior || 'Positive'}
+                  onChange={(e) => setFormData({ ...formData, behavior: e.target.value })}
+                  className="w-full px-3 py-2.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                >
+                  <option value="Positive">Positive</option>
+                  <option value="Negative">Negative</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Tags (comma-separated)</label>
+              <input
+                type="text"
+                value={(formData.tags || []).join(', ')}
+                onChange={(e) => setFormData({ ...formData, tags: e.target.value.split(',').map((t: string) => t.trim()).filter(Boolean) })}
+                placeholder="e.g., UI, Search, Critical"
+                className="w-full px-3 py-2.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Pre-condition</label>
+              <textarea
+                value={formData.precondition || ''}
+                onChange={(e) => setFormData({ ...formData, precondition: e.target.value })}
+                className="w-full px-3 py-2.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 min-h-[60px] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <label className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Test Steps</label>
+                <Button variant="ghost" onClick={handleAddStep} className="text-xs px-2 py-1 h-auto">+ Add Step</Button>
+              </div>
+              <div className="space-y-3">
+                {formData.steps?.map((step: any, idx: number) => (
+                  <div key={idx} className="bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 rounded-lg p-3 space-y-3 relative group">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-semibold text-zinc-600">Step {idx + 1}</span>
+                      <button onClick={() => handleDeleteStep(idx)} className="text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"><X size={14} /></button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                          <label className="text-[10px] font-medium text-zinc-500 uppercase">Action</label>
+                          <input
+                            type="text"
+                            value={step.action || ''}
+                            onChange={(e) => handleStepChange(idx, 'action', e.target.value)}
+                            className="w-full px-2 py-1.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                      </div>
+                      <div className="space-y-1">
+                          <label className="text-[10px] font-medium text-zinc-500 uppercase">Expected Result</label>
+                          <input
+                            type="text"
+                            value={step.expectedResult || ''}
+                            onChange={(e) => handleStepChange(idx, 'expectedResult', e.target.value)}
+                            className="w-full px-2 py-1.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Post-condition</label>
+              <textarea
+                value={formData.postcondition || ''}
+                onChange={(e) => setFormData({ ...formData, postcondition: e.target.value })}
+                className="w-full px-3 py-2.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 min-h-[60px] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 flex justify-between items-center shrink-0">
+            <div>
+                {onDelete && (
+                <Button variant="ghost" onClick={() => { onDelete(formData); onClose(); }} className="text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10">Delete Case</Button>
+                )}
+            </div>
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={onClose}>Cancel</Button>
+              <Button variant="primary" onClick={handleSave}>Save Changes</Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const TestCataloguePage = ({ setActiveRoute, testCases = [], setTestCases }: { setActiveRoute: (route: string) => void, testCases?: any[], setTestCases?: (tests: any[]) => void }) => {
+  const [expandedTc, setExpandedTc] = useState<string | null>(null);
+  const [editingTc, setEditingTc] = useState<any | null>(null);
+
   const steps = [
     { id: 1, label: 'PRD Intake', icon: FileText, status: 'pending' },
     { id: 2, label: 'Coverage Audit', icon: ShieldCheck, status: 'pending' },
     { id: 3, label: 'Test Catalogue', icon: Library, status: 'current' },
     { id: 4, label: 'Qase Integration', icon: Link2, status: 'pending' }
   ];
+
+  const handleSaveTestCase = (updatedTc: any) => {
+    if (!setTestCases) return;
+    const newCases = testCases.map(tc => tc.tcId === updatedTc.tcId ? updatedTc : tc);
+    setTestCases(newCases);
+  };
+
+  const handleDeleteTestCase = (tcToDelete: any) => {
+    if (!setTestCases) return;
+    const newCases = testCases.filter(tc => tc.tcId !== tcToDelete.tcId);
+    setTestCases(newCases);
+  };
 
   return (
     <div className="h-full w-full bg-white dark:bg-zinc-950 overflow-y-auto">
@@ -1018,42 +1242,112 @@ const TestCataloguePage = ({ setActiveRoute, testCases = [] }: { setActiveRoute:
           <table className="w-full text-left text-sm">
             <thead className="bg-zinc-50 dark:bg-zinc-900/80 border-b border-zinc-200 dark:border-zinc-800">
               <tr>
-                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Test Case</th>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium w-[40%]">Test Case</th>
                 <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Priority</th>
                 <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Type</th>
-                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Auto</th>
-                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Status</th>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Source</th>
+                <th className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/50 text-zinc-600 dark:text-zinc-400">
-              {testCases.map((tc, index) => (
-                <tr key={tc.id || index} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50 spring-transition">
-                  <td className="px-4 py-3">
-                    <div className="flex flex-col">
-                      <span className="font-mono text-xs text-indigo-600 dark:text-indigo-400 mb-1">{tc.tcId || `TC-${index+1}`}</span>
-                      <span className="text-zinc-800 dark:text-zinc-200 font-medium">{tc.title}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={tc.priority === 'Critical' || tc.priority === 'P0' ? 'danger' : tc.priority === 'High' || tc.priority === 'P1' ? 'warning' : 'default'}>
-                      {tc.priority}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3">{tc.type}</td>
-                  <td className="px-4 py-3">
-                    <Bot size={16} className="text-indigo-500" />
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant="success">
-                      ready
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
+              {testCases.map((tc, index) => {
+                const tcKey = tc.tcId || `TC-${index+1}`;
+                const isExpanded = expandedTc === tcKey;
+                
+                return (
+                <React.Fragment key={tcKey}>
+                  <tr 
+                    onClick={() => setExpandedTc(isExpanded ? null : tcKey)}
+                    className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50 spring-transition cursor-pointer group"
+                  >
+                    <td className="px-4 py-3">
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-mono text-xs text-indigo-600 dark:text-indigo-400">{tcKey}</span>
+                          <ChevronDown size={14} className={`text-zinc-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                        </div>
+                        <span className="text-zinc-800 dark:text-zinc-200 font-medium">{tc.title}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge variant={tc.priority === 'Critical' || tc.priority === 'P0' ? 'danger' : tc.priority === 'High' || tc.priority === 'P1' ? 'warning' : 'default'}>
+                        {tc.priority || 'Medium'}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3">{tc.type || 'Functional'}</td>
+                    <td className="px-4 py-3">
+                      <Bot size={16} className="text-indigo-500" />
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex justify-end items-center gap-2">
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); setEditingTc(tc); }}
+                            className="p-1.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                            <Edit3 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  
+                  {isExpanded && (
+                    <tr className="bg-zinc-50/50 dark:bg-zinc-900/20 border-b border-zinc-200 dark:border-zinc-800">
+                        <td colSpan={5} className="px-6 py-5">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 text-sm">
+                                <div>
+                                    <h4 className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">Pre-condition</h4>
+                                    <p className="text-zinc-700 dark:text-zinc-300 text-xs bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 rounded-lg leading-relaxed">
+                                        {tc.precondition || 'No pre-condition specified'}
+                                    </p>
+                                    
+                                    <h4 className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2 mt-6">Post-condition</h4>
+                                    <p className="text-zinc-700 dark:text-zinc-300 text-xs bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 rounded-lg leading-relaxed">
+                                        {tc.postcondition || 'No post-condition specified'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">Test Steps</h4>
+                                    <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden shadow-sm">
+                                        <table className="w-full text-xs">
+                                            <thead className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
+                                                <tr>
+                                                    <th className="px-3 py-2.5 text-left font-medium text-zinc-600 dark:text-zinc-400 w-8">#</th>
+                                                    <th className="px-3 py-2.5 text-left font-medium text-zinc-600 dark:text-zinc-400">Action</th>
+                                                    <th className="px-3 py-2.5 text-left font-medium text-zinc-600 dark:text-zinc-400">Expected Result</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
+                                                {tc.steps?.map((step: any, sIdx: number) => (
+                                                    <tr key={sIdx}>
+                                                        <td className="px-3 py-2.5 text-zinc-400 font-mono text-[10px]">{sIdx + 1}</td>
+                                                        <td className="px-3 py-2.5 text-zinc-700 dark:text-zinc-300 leading-relaxed">{step.action}</td>
+                                                        <td className="px-3 py-2.5 text-zinc-700 dark:text-zinc-300 leading-relaxed">{step.expectedResult}</td>
+                                                    </tr>
+                                                ))}
+                                                {(!tc.steps || tc.steps.length === 0) && (
+                                                    <tr>
+                                                        <td colSpan={3} className="px-3 py-4 text-center text-zinc-500 italic">No steps defined</td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+                );
+              })}
               {testCases.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-zinc-600">
-                    No test cases generated. Please go back and analyze a PRD first.
+                  <td colSpan={5} className="px-4 py-12 text-center">
+                    <div className="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400">
+                      <Library size={32} className="mb-3 opacity-20" />
+                      <p>No test cases generated.</p>
+                      <p className="text-xs mt-1 opacity-70">Please go back and analyze a PRD first.</p>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -1067,7 +1361,7 @@ const TestCataloguePage = ({ setActiveRoute, testCases = [] }: { setActiveRoute:
                 variant="secondary" 
                 icon={ArrowLeft} 
                 onClick={() => setActiveRoute('coverage-audit')}
-                className="px-5 py-2.5 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-100 dark:bg-zinc-800"
+                className="px-5 py-2.5 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800"
             >
                 Back
             </Button>
@@ -1077,10 +1371,19 @@ const TestCataloguePage = ({ setActiveRoute, testCases = [] }: { setActiveRoute:
                 onClick={() => setActiveRoute('qase-integration')}
                 className="px-6 py-2.5 shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]"
             >
-                Sync to Qase
+                Continue to Sync
             </Button>
         </div>
       </div>
+      
+      {editingTc && (
+        <EditTestCaseModal
+          tc={editingTc}
+          onClose={() => setEditingTc(null)}
+          onSave={handleSaveTestCase}
+          onDelete={handleDeleteTestCase}
+        />
+      )}
     </div>
   );
 };
@@ -1656,6 +1959,7 @@ export default function App() {
         return <TestCataloguePage 
                  setActiveRoute={setActiveRoute}
                  testCases={testCases}
+                 setTestCases={setTestCases}
                />;
       case 'qase-integration':
         return <QaseIntegrationPage 
