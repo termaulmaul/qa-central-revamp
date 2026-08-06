@@ -1456,6 +1456,11 @@ const QaseIntegrationPage = ({ setActiveRoute, testCases = [] }: { setActiveRout
   }))
 
   const handlePushToQase = async () => {
+    if (!testCases || testCases.length === 0) {
+      showToast('No test cases to push. Please input PRD in PRD Intake first.', 'error')
+      return
+    }
+
     let finalProjectCode = selectedProject
     let finalSuiteId = selectedSuite
 
