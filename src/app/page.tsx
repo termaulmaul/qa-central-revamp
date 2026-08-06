@@ -1672,7 +1672,7 @@ const QaseIntegrationPage = ({ setActiveRoute, testCases = [] }: { setActiveRout
                                         <select 
                                             value={selectedProject} 
                                             onChange={(e) => setSelectedProject(e.target.value)}
-                                            className="flex-1 px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md text-sm bg-white dark:bg-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                            className="flex-1 min-w-0 truncate px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md text-sm bg-white dark:bg-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                         >
                                             <option value="">Choose a project...</option>
                                             {projects.map((p) => (
@@ -1712,7 +1712,7 @@ const QaseIntegrationPage = ({ setActiveRoute, testCases = [] }: { setActiveRout
                                         <select 
                                             value={selectedSuite} 
                                             onChange={(e) => setSelectedSuite(e.target.value)}
-                                            className="flex-1 px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md text-sm bg-white dark:bg-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                            className="flex-1 min-w-0 truncate px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md text-sm bg-white dark:bg-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                             disabled={!selectedProject}
                                         >
                                             <option value="">Root (No Suite)</option>
