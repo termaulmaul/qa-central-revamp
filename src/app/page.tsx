@@ -22,6 +22,8 @@ import type { QaseCapability } from '../types/qase';
 import { useLLMState, updateLLMState, testLLMChat, abortLLMChat, fetchLLMModels } from '../lib/llm-store';
 import { useQAGuidelinesState, updateQAGuidelinesState } from '../lib/qa-guidelines-store';
 import { useCurrentUser, triggerSignOut, type CurrentUser } from '../lib/use-current-user';
+import { useTheme, setTheme } from '../lib/theme-store';
+import { useUserSettingsSync } from '../lib/user-settings';
 
 export const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
   if (typeof window !== 'undefined') {
@@ -2741,9 +2743,12 @@ const TelemetryFooter = () => {
 
 export default function App() {
   const { user } = useCurrentUser();
+  // Two-way sync of the signed-in user's saved settings (theme, LLM, Qase, guidelines).
+  useUserSettingsSync(user?.id ?? null);
+  const theme = useTheme();
+  const isDarkMode = theme === 'dark';
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeRoute, setActiveRoute] = useState('dashboard');
-  const [isDarkMode, setIsDarkMode] = useState(false);
   
   // QA Engine States
   const [prdText, setPrdText] = useState('');
@@ -2791,7 +2796,7 @@ export default function App() {
     <>
       <GlobalStyles />
       <div 
-        className={`flex h-screen w-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans overflow-hidden selection:bg-blue-500/30 ${isDarkMode ? 'dark' : ''}`}
+        className="flex h-screen w-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans overflow-hidden selection:bg-blue-500/30"
         role="application"
         aria-label="QA Central - Test Management Platform"
       >
@@ -2801,7 +2806,7 @@ export default function App() {
           activeRoute={activeRoute}
           setActiveRoute={setActiveRoute}
           isDarkMode={isDarkMode}
-          setIsDarkMode={setIsDarkMode}
+          setIsDarkMode={(val: boolean) => setTheme(val ? 'dark' : 'light')}
         />
         
         <main 
