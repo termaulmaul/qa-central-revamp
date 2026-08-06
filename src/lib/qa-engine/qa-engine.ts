@@ -32,11 +32,23 @@ export { PRIORITY_CRITERIA }
 
 /**
  * Normalizes a test case title to enforce strict "Verify [Behavior] when [Condition]" format.
- * - Must start with "Verify"
- * - Must contain "when" to separate behavior from condition
- * - If already has "Verify", keeps it as-is
- * - If lacks "when", attempts to split the title intelligently
- * Ensures consistent high-level test scenario naming.
+ * 
+ * @param {string} title - The raw test case title to normalize
+ * @returns {string} - Normalized title in "Verify [Behavior] when [Condition]" format
+ * 
+ * Ensures consistent high-level test scenario naming by:
+ * - Enforcing "Verify" prefix
+ * - Requiring "when" clause to separate behavior from condition
+ * - Intelligently splitting titles that lack "when" based on condition markers
+ * - Preserving already-valid titles
+ * 
+ * @example
+ * normalizeTestCaseTitle("User can login when entering credentials")
+ * // Returns: "Verify user can login when entering credentials"
+ * 
+ * @example
+ * normalizeTestCaseTitle("Verify dashboard displays on login")
+ * // Returns: "Verify dashboard displays when user logs in"
  */
 export function normalizeTestCaseTitle(title: string): string {
   const trimmed = title.trim()
@@ -99,6 +111,23 @@ export function isValidTestCaseTitle(title: string): boolean {
  * Returns null if the title doesn't follow the format.
  * Example: "Verify Stock Screener opens from Market page when user clicks Stock Screener link"
  * Returns: { behavior: "Stock Screener opens from Market page", condition: "user clicks Stock Screener link" }
+ */
+/**
+ * Extracts behavior and condition components from a normalized test case title.
+ * 
+ * @param {string} title - A test case title in "Verify [Behavior] when [Condition]" format
+ * @returns {{ behavior: string; condition: string } | null} - Object with behavior and condition, or null if format is invalid
+ * 
+ * Parses the structured title format to isolate testable components.
+ * Behavior: what should happen in the system
+ * Condition: the context or action that triggers the behavior
+ * 
+ * @example
+ * extractBehaviorAndCondition("Verify Stock Screener opens from Market page when user clicks Stock Screener link")
+ * // Returns: { 
+ * //   behavior: "Stock Screener opens from Market page", 
+ * //   condition: "user clicks Stock Screener link" 
+ * // }
  */
 export function extractBehaviorAndCondition(title: string): { behavior: string; condition: string } | null {
   const trimmed = title.trim()
@@ -607,7 +636,30 @@ function extractFeaturesFromGenericPRD(prdContent: PRDContent, prdText: string):
   return features
 }
 
+/**
+ * QA Engine: Core test generation and analysis engine for PRD processing
+ * 
+ * Provides two primary methods:
+ * - analyzePRD: Parses PRD documents and extracts feature structure
+ * - generateTests: Creates comprehensive test cases with steps and coverage metrics
+ */
 export const QAEngine = {
+  /**
+   * Analyzes a PRD document and extracts feature structure.
+   * 
+   * @param {string} text - Raw PRD text from PDF or uploaded document
+   * @returns {Promise<{ coverage: CoverageItem[]; prdContent: PRDContent }>} - Parsed PRD structure with feature coverage
+   * 
+   * Process:
+   * 1. Analyzes PRD structure (objectives, scope, requirements)
+   * 2. Extracts features using Stock Screener pattern (F1 — Feature Name) or generic pattern
+   * 3. Generates coverage items mapping each feature to a test module
+   * 4. Caches PRDContent globally for use in generateTests
+   * 
+   * @example
+   * const { coverage, prdContent } = await QAEngine.analyzePRD(prdText);
+   * // coverage: [{ area: "Module 1 - Feature Name", progress: "F1" }, ...]
+   */
   analyzePRD: async (text: string) => {
     // Parse PRD structure from actual PDF text
     const prdContent = analyzePRDStructure(text)
@@ -635,6 +687,38 @@ export const QAEngine = {
     }
   },
 
+  /**
+   * Generates comprehensive test cases from PRD text using AI and pattern matching.
+   * 
+   * @param {string} prdText - Raw PRD document text
+   * @param {PRDContent} [prdContent] - Optional parsed PRD structure for context
+   * @returns {Promise<TestCase[]>} - Array of generated test cases with full step details
+   * 
+   * Process:
+   * 1. Builds dynamic RAG prompt using company QA guidelines
+   * 2. Detects PRD type (Stock Screener or generic) and applies appropriate parser
+   * 3. Extracts features/capabilities and requirements
+   * 4. Generates 8-10 test scenarios per feature (Positive, Negative, Edge cases)
+   * 5. Creates executable steps with data and expected results
+   * 6. Validates test cases and deduplicates
+   * 7. Generates coverage statistics
+   * 
+   * Test Quality: Uses logic engine to evaluate coverage vs. requirements
+   * Priority Assignment: P0 (MUST TEST) for critical paths, P1-P3 for supporting tests
+   * 
+   * @example
+   * const testCases = await QAEngine.generateTests(prdText);
+   * // Returns: [
+   * //   {
+   * //     id: "TC001", 
+   * //     title: "Verify dashboard opens when user logs in",
+   * //     priority: "P0",
+   * //     steps: [...],
+   * //     qualityScore: 0.92
+   * //   },
+   * //   ...
+   * // ]
+   */
   generateTests: async (prdText: string, prdContent?: PRDContent): Promise<TestCase[]> => {
     // --- DYNAMIC RAG PROMPT BUILDER ---
     const guidelines = loadQAGuidelinesState().guidelinesText;
