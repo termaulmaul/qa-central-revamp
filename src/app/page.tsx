@@ -230,7 +230,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, activeRoute, setActiveRoute, isD
           {!isCollapsed && <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>}
         </button>
         <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-100 dark:bg-zinc-800/50 hover:text-zinc-800 dark:text-zinc-200 spring-transition text-sm">
-          <div className="w-5 h-5 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-900 dark:text-white">
+          <div className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-300">
             <User size={12} />
           </div>
           {!isCollapsed && <span>John Doe</span>}
@@ -1296,17 +1296,21 @@ const TestCataloguePage = ({ setActiveRoute, testCases = [], setTestCases }: { s
 };
 
 const QaseIntegrationPage = ({ setActiveRoute, testCases = [] }: { setActiveRoute: (route: string) => void, testCases?: any[] }) => {
-  const { token = '' } = useQaseState()
+  const qaseState = useQaseState()
+  const token = qaseState.token || ''
   const setToken = (newToken: string) => updateQaseState({ token: newToken })
+  
+  const isGloballyConnected = qaseState.status === 'connected';
+  
   const [testing, setTesting] = useState(false)
-  const [tokenValid, setTokenValid] = useState(false)
-  const [projects, setProjects] = useState<QaseProject[]>([])
-  const [selectedProject, setSelectedProject] = useState('')
+  const [tokenValid, setTokenValid] = useState(isGloballyConnected)
+  const [projects, setProjects] = useState<QaseProject[]>(isGloballyConnected ? qaseState.projects : [])
+  const [selectedProject, setSelectedProject] = useState(isGloballyConnected ? qaseState.selectedProjectCode || '' : '')
   const [isCreatingProject, setIsCreatingProject] = useState(false)
   const [newProjectTitle, setNewProjectTitle] = useState('')
   const [newProjectCode, setNewProjectCode] = useState('')
   const [creatingProjectLoader, setCreatingProjectLoader] = useState(false)
-  const [suites, setSuites] = useState<QaseSuite[]>([])
+  const [suites, setSuites] = useState<QaseSuite[]>(isGloballyConnected ? qaseState.suites : [])
   const [selectedSuite, setSelectedSuite] = useState('')
   const [loadingSuites, setLoadingSuites] = useState(false)
   const [isCreatingSuite, setIsCreatingSuite] = useState(false)
@@ -1333,6 +1337,15 @@ const QaseIntegrationPage = ({ setActiveRoute, testCases = [] }: { setActiveRout
   useEffect(() => {
     if (token.trim() && !tokenValid && !testing) {
       handleTestConnection()
+    } else if (isGloballyConnected && projects.length === 0) {
+      // If globally connected but projects aren't loaded locally yet, fetch them
+      const api = new QaseAPI(token);
+      api.getProjects().then(p => {
+        setProjects(p);
+        if (p.length > 0 && !selectedProject) {
+          setSelectedProject(qaseState.selectedProjectCode || p[0].code);
+        }
+      }).catch(console.error);
     }
   }, [])
 
@@ -2478,6 +2491,159 @@ const DashboardPage = () => (
     </div>
   </div>
 );
+const TelemetryFooter = () => {
+  const llmState = useLLMState();
+  const qaseState = useQaseState();
+  
+  const [llmStatus, setLlmStatus] = useState<'checking' | 'ok' | 'error'>('checking');
+  const [qaseStatus, setQaseStatus] = useState<'checking' | 'ok' | 'error'>('checking');
+  const [qaseLatency, setQaseLatency] = useState<number | null>(null);
+  const [llmLatency, setLlmLatency] = useState<number | null>(null);
+  const [qaseError, setQaseError] = useState<string>('');
+  const [llmError, setLlmError] = useState<string>('');
+  const [lastCheck, setLastCheck] = useState<string>('');
+  
+  const [showQaseTime, setShowQaseTime] = useState(false);
+  const [showLlmTime, setShowLlmTime] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    const checkConnections = async () => {
+      const nowStr = new Intl.DateTimeFormat('id-ID', { 
+        timeZone: 'Asia/Jakarta', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+      }).format(new Date());
+      if (mounted) setLastCheck(nowStr);
+
+      // Check Qase Heartbeat
+      if (qaseState.token) {
+        if (mounted && qaseStatus !== 'checking') setQaseStatus('checking');
+        try {
+          const start = performance.now();
+          const res = await fetch('/api/qase/project?limit=1', {
+            headers: { 'Token': qaseState.token }
+          });
+          if (mounted) {
+            setQaseStatus(res.ok ? 'ok' : 'error');
+            if (res.ok) {
+              setQaseLatency(Math.round(performance.now() - start));
+              setQaseError('');
+            } else {
+              setQaseError(`HTTP ${res.status}`);
+            }
+          }
+        } catch (err: any) {
+          if (mounted) {
+            setQaseStatus('error');
+            setQaseError(err.message || 'Network error');
+          }
+        }
+      } else {
+        if (mounted) {
+          setQaseStatus('error');
+          setQaseError('Not configured');
+        }
+      }
+
+      // Check LLM Heartbeat
+      if (llmState.baseUrl) {
+        if (mounted && llmStatus !== 'checking') setLlmStatus('checking');
+        try {
+          const start = performance.now();
+          const headers: Record<string, string> = {};
+          if (llmState.apiToken) headers['Authorization'] = `Bearer ${llmState.apiToken}`;
+          const res = await fetch(`${llmState.baseUrl.replace(/\/+$/, '')}/models`, { headers });
+          if (mounted) {
+            setLlmStatus(res.ok ? 'ok' : 'error');
+            if (res.ok) {
+              setLlmLatency(Math.round(performance.now() - start));
+              setLlmError('');
+            } else {
+              setLlmError(`HTTP ${res.status}`);
+            }
+          }
+        } catch (err: any) {
+          if (mounted) {
+            setLlmStatus('error');
+            setLlmError(err.message || 'Network error');
+          }
+        }
+      } else {
+        if (mounted) {
+          setLlmStatus('error');
+          setLlmError('Not configured');
+        }
+      }
+    };
+
+    checkConnections();
+    const interval = setInterval(checkConnections, 30000); // Poll every 30s
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, [qaseState.token, qaseState.baseUrl, llmState.baseUrl, llmState.apiToken]);
+
+  return (
+    <footer className="h-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-center px-4 text-[10px] text-zinc-600 dark:text-zinc-400 font-mono shrink-0 relative z-20">
+      <div className="flex items-center gap-6">
+        <div 
+          className="relative flex items-center gap-1.5 font-medium cursor-default group"
+          onClick={() => {
+            setShowQaseTime(true);
+            setTimeout(() => setShowQaseTime(false), 3000);
+          }}
+        >
+          <span className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">QASE</span>
+          <div className={`w-1.5 h-1.5 rounded-full ${qaseStatus === 'ok' ? 'bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]' : qaseStatus === 'checking' ? 'bg-amber-500 animate-pulse' : 'bg-rose-500'}`} />
+          {showQaseTime && lastCheck && (
+            <span className="text-zinc-400 dark:text-zinc-500 ml-1 animate-in fade-in slide-in-from-left-1 duration-200">
+              {lastCheck}
+            </span>
+          )}
+          
+          {/* Custom Tooltip */}
+          <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-zinc-800 dark:bg-zinc-100 text-zinc-200 dark:text-zinc-800 text-xs rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50">
+            <div className="font-semibold mb-1 border-b border-zinc-700 dark:border-zinc-300 pb-1">QASE Status: {qaseStatus.toUpperCase()}</div>
+            <div>Latency: {qaseLatency !== null ? `${qaseLatency}ms` : '--'}</div>
+            <div>Last Checked: {lastCheck || '--'}</div>
+            {qaseError && <div className="text-rose-400 dark:text-rose-600 mt-1">Error: {qaseError}</div>}
+            {/* Arrow */}
+            <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-zinc-800 dark:border-t-zinc-100"></div>
+          </div>
+        </div>
+        
+        <div 
+          className="relative flex items-center gap-1.5 font-medium cursor-default group"
+          onClick={() => {
+            setShowLlmTime(true);
+            setTimeout(() => setShowLlmTime(false), 3000);
+          }}
+        >
+          <span className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">LLM</span>
+          <div className={`w-1.5 h-1.5 rounded-full ${llmStatus === 'ok' ? 'bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]' : llmStatus === 'checking' ? 'bg-amber-500 animate-pulse' : 'bg-rose-500'}`} />
+          {showLlmTime && lastCheck && (
+            <span className="text-zinc-400 dark:text-zinc-500 ml-1 animate-in fade-in slide-in-from-left-1 duration-200">
+              {lastCheck}
+            </span>
+          )}
+
+          {/* Custom Tooltip */}
+          <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-zinc-800 dark:bg-zinc-100 text-zinc-200 dark:text-zinc-800 text-xs rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50">
+            <div className="font-semibold mb-1 border-b border-zinc-700 dark:border-zinc-300 pb-1">LLM Status: {llmStatus.toUpperCase()}</div>
+            <div>Latency: {llmLatency !== null ? `${llmLatency}ms` : '--'}</div>
+            <div>Last Checked: {lastCheck || '--'}</div>
+            {llmError && <div className="text-rose-400 dark:text-rose-600 mt-1">Error: {llmError}</div>}
+            {/* Arrow */}
+            <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-zinc-800 dark:border-t-zinc-100"></div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
 
 export default function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -2546,16 +2712,7 @@ export default function App() {
           </div>
           
           {/* Telemetry Footer */}
-          <footer className="h-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-center px-4 justify-between text-[10px] text-zinc-600 dark:text-zinc-400  font-mono shrink-0 relative z-20">
-            <div className="flex gap-4">
-              <span className="flex items-center gap-1"><CheckCircle2 size={10} className="text-emerald-600 dark:text-emerald-500"/> All systems operational</span>
-              <span>Workspace: default-ws-1</span>
-            </div>
-            <div className="flex gap-4">
-              <span>Qase Sync: 2 mins ago</span>
-              <span>Latency: 42ms</span>
-            </div>
-          </footer>
+          <TelemetryFooter />
         </main>
       </div>
       <ToastContainer />
