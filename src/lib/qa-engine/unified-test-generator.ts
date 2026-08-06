@@ -197,8 +197,8 @@ function extractBehaviorStatement(requirement: RequirementBlock): string | null 
   const systemMatch = content.match(/[Ss]ystem\s+(?:should|must)\s+(.+?)(?:\.|\s+when|$)/i)
   if (systemMatch) return systemMatch[1]
 
-  // Default: use first sentence
-  const firstSentence = content.split(/[.!?]/)[0]
+  // Default: use first line
+  const firstSentence = content.split(/\n/)[0]
   return firstSentence.length > 10 ? firstSentence : null
 }
 

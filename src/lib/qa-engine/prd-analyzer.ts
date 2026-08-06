@@ -329,9 +329,9 @@ export function extractCapabilitiesWithRequirements(prdContent: PRDContent): Arr
         .replace(/^#+\s+/, '')
         .trim()
 
-      // Limit capability name to first 50 chars
-      if (capabilityName.length > 50) {
-        capabilityName = capabilityName.substring(0, 47) + '...'
+      // Limit capability name to first 150 chars
+      if (capabilityName.length > 150) {
+        capabilityName = capabilityName.substring(0, 147) + '...'
       }
 
       capabilities.push({

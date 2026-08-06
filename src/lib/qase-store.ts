@@ -13,8 +13,9 @@ const initialCapabilities = (): QaseCapability[] => [
 
 export const createQaseState = (): QaseState => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('qaseApiToken') || undefined : undefined;
+  const baseUrl = typeof window !== 'undefined' ? localStorage.getItem('qaseBaseUrl') || DEFAULT_QASE_BASE_URL : DEFAULT_QASE_BASE_URL;
   return {
-    baseUrl: DEFAULT_QASE_BASE_URL,
+    baseUrl,
     token,
     projects: [],
     suites: [],
@@ -37,10 +38,15 @@ export const loadQaseState = () => state;
 
 export const saveQaseState = (next: QaseState) => {
   state = next;
-  if (typeof window !== 'undefined' && state.token) {
-    localStorage.setItem('qaseApiToken', state.token);
-  } else if (typeof window !== 'undefined') {
-    localStorage.removeItem('qaseApiToken');
+  if (typeof window !== 'undefined') {
+    if (state.token) {
+      localStorage.setItem('qaseApiToken', state.token);
+    } else {
+      localStorage.removeItem('qaseApiToken');
+    }
+    if (state.baseUrl) {
+      localStorage.setItem('qaseBaseUrl', state.baseUrl);
+    }
   }
   emit();
 };

@@ -290,7 +290,7 @@ function extractFeaturesFromText(prdText: string): Array<{
 
       // Extract user story keywords for later test case generation
       const details = description
-        .split('.')
+        .split(/(?<=[a-z])\.\s+(?=[A-Z])/)
         .map(d => d.trim())
         .filter(d => d.length > 5 && /^(user|User|sebagai|dapat|dapat melihat|dapat|dapat klik)/i.test(d))
         .slice(0, 5)
@@ -501,10 +501,10 @@ function extractFeaturesFromGenericPRD(prdContent: PRDContent, prdText: string):
         const itemText = item.trim()
         if (!itemText) return
         
-        // Use first line or sentence as name
-        let nameMatch = itemText.match(/^(?:(?:\d+\.\s+)?)([^.\n]+)/)
+        // Use first line as name
+        let nameMatch = itemText.match(/^(?:(?:\d+\.\s+)?)(.+?)(?:\n|$)/)
         let subName = nameMatch ? nameMatch[1].trim() : `Item ${i+1}`
-        if (subName.length > 60) subName = subName.substring(0, 60) + '...'
+        if (subName.length > 150) subName = subName.substring(0, 150) + '...'
         
         features.push({
           featureId: `${prefix}.${i+1}`,
@@ -570,7 +570,14 @@ function extractFeaturesFromGenericPRD(prdContent: PRDContent, prdText: string):
   if (features.length === 0) {
     const lines = prdText
       .split('\n')
-      .filter(line => line.trim().length > 10)
+      .map(line => line.trim())
+      .filter(line => 
+        line.length > 10 && 
+        line.length < 150 && 
+        !line.startsWith('|') && 
+        !line.includes('@') &&
+        !/^[|\-]/.test(line)
+      )
       .slice(0, 10)
 
     lines.forEach((line, idx) => {
