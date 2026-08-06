@@ -2600,13 +2600,14 @@ const TelemetryFooter = () => {
           <div className={`w-1.5 h-1.5 rounded-full ${qaseStatus === 'ok' ? 'bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]' : qaseStatus === 'checking' ? 'bg-amber-500 animate-pulse' : 'bg-rose-500'}`} />
           
           {/* Custom Tooltip */}
-          <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-zinc-800 dark:bg-zinc-100 text-zinc-200 dark:text-zinc-800 text-xs rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50">
-            <div className="font-semibold mb-1 border-b border-zinc-700 dark:border-zinc-300 pb-1">QASE Status: {qaseStatus.toUpperCase()}</div>
+          <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs rounded border border-zinc-200 dark:border-zinc-700 shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50">
+            <div className="font-semibold mb-1 border-b border-zinc-200 dark:border-zinc-700 pb-1">QASE Status: {qaseStatus.toUpperCase()}</div>
             <div>Latency: {qaseLatency !== null ? `${qaseLatency}ms` : '--'}</div>
             <div>Last Checked: {lastCheck || '--'}</div>
-            {qaseError && <div className="text-rose-400 dark:text-rose-600 mt-1">Error: {qaseError}</div>}
+            {qaseError && <div className="text-rose-500 dark:text-rose-400 mt-1">Error: {qaseError}</div>}
             {/* Arrow */}
-            <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-zinc-800 dark:border-t-zinc-100"></div>
+            <div className="absolute top-full left-4 -mt-px border-4 border-transparent border-t-zinc-200 dark:border-t-zinc-700"></div>
+            <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-white dark:border-t-zinc-800"></div>
           </div>
         </div>
         
@@ -2616,13 +2617,14 @@ const TelemetryFooter = () => {
           <span className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">LLM</span>
           <div className={`w-1.5 h-1.5 rounded-full ${llmStatus === 'ok' ? 'bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]' : llmStatus === 'checking' ? 'bg-amber-500 animate-pulse' : 'bg-rose-500'}`} />
           {/* Custom Tooltip */}
-          <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-zinc-800 dark:bg-zinc-100 text-zinc-200 dark:text-zinc-800 text-xs rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50">
-            <div className="font-semibold mb-1 border-b border-zinc-700 dark:border-zinc-300 pb-1">LLM Status: {llmStatus.toUpperCase()}</div>
+          <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs rounded border border-zinc-200 dark:border-zinc-700 shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50">
+            <div className="font-semibold mb-1 border-b border-zinc-200 dark:border-zinc-700 pb-1">LLM Status: {llmStatus.toUpperCase()}</div>
             <div>Latency: {llmLatency !== null ? `${llmLatency}ms` : '--'}</div>
             <div>Last Checked: {lastCheck || '--'}</div>
-            {llmError && <div className="text-rose-400 dark:text-rose-600 mt-1">Error: {llmError}</div>}
+            {llmError && <div className="text-rose-500 dark:text-rose-400 mt-1">Error: {llmError}</div>}
             {/* Arrow */}
-            <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-zinc-800 dark:border-t-zinc-100"></div>
+            <div className="absolute top-full left-4 -mt-px border-4 border-transparent border-t-zinc-200 dark:border-t-zinc-700"></div>
+            <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-white dark:border-t-zinc-800"></div>
           </div>
         </div>
       </div>
