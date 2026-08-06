@@ -45,13 +45,24 @@ const ToastContainer = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none">
+    <div 
+      className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none"
+      role="region"
+      aria-label="Notifications"
+      aria-live="polite"
+      aria-atomic="false"
+    >
       {toasts.map(t => (
-        <div key={t.id} className={`px-4 py-3 rounded-lg shadow-lg text-sm font-medium text-white ${t.type === 'error' ? 'bg-red-500' : t.type === 'success' ? 'bg-green-500' : 'bg-zinc-800'} transition-all transform pointer-events-auto flex items-center gap-2`}>
-          {t.type === 'error' && <AlertCircle size={16} />}
-          {t.type === 'success' && <CheckCircle2 size={16} />}
-          {t.type === 'info' && <Bell size={16} />}
-          {t.message}
+        <div 
+          key={t.id} 
+          className={`px-4 py-3 rounded-lg shadow-lg text-sm font-medium text-white ${t.type === 'error' ? 'bg-red-500' : t.type === 'success' ? 'bg-green-500' : 'bg-zinc-800'} transition-all transform pointer-events-auto flex items-center gap-2`}
+          role="status"
+          aria-live={t.type === 'error' ? 'assertive' : 'polite'}
+        >
+          {t.type === 'error' && <AlertCircle size={16} aria-hidden="true" />}
+          {t.type === 'success' && <CheckCircle2 size={16} aria-hidden="true" />}
+          {t.type === 'info' && <Bell size={16} aria-hidden="true" />}
+          <span>{t.message}</span>
         </div>
       ))}
     </div>
@@ -2760,7 +2771,11 @@ export default function App() {
   return (
     <>
       <GlobalStyles />
-      <div className={`flex h-screen w-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans overflow-hidden selection:bg-blue-500/30 ${isDarkMode ? 'dark' : ''}`}>
+      <div 
+        className={`flex h-screen w-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans overflow-hidden selection:bg-blue-500/30 ${isDarkMode ? 'dark' : ''}`}
+        role="application"
+        aria-label="QA Central - Test Management Platform"
+      >
         <Sidebar 
           isCollapsed={isSidebarCollapsed} 
           setIsCollapsed={setIsSidebarCollapsed} 
@@ -2770,7 +2785,11 @@ export default function App() {
           setIsDarkMode={setIsDarkMode}
         />
         
-        <main className="flex-1 flex flex-col min-w-0 bg-white dark:bg-zinc-950 relative shadow-[-10px_0_30px_rgba(0,0,0,0.05)] dark:shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-10">
+        <main 
+          className="flex-1 flex flex-col min-w-0 bg-white dark:bg-zinc-950 relative shadow-[-10px_0_30px_rgba(0,0,0,0.05)] dark:shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-10"
+          role="main"
+          aria-label="Main content"
+        >
           <Header activeRoute={activeRoute} />
           <div className="flex-1 relative overflow-hidden">
             {renderContent()}
