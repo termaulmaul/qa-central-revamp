@@ -1903,7 +1903,7 @@ const AIPlaygroundPage = () => {
           <div 
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            className="relative border border-zinc-300 dark:border-zinc-700 rounded-xl bg-zinc-100 dark:bg-zinc-900/50 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 focus-within:bg-white dark:bg-zinc-950 spring-transition shadow-sm">
+            className="relative border border-zinc-300 dark:border-zinc-700 rounded-xl bg-zinc-100 dark:bg-zinc-900/50 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 focus-within:bg-white dark:focus-within:bg-zinc-950 spring-transition shadow-sm">
             <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="*/*" />
             <textarea 
               value={prompt}
