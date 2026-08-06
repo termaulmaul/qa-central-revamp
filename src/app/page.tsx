@@ -1717,7 +1717,7 @@ const QaseIntegrationPage = ({ setActiveRoute, testCases = [] }: { setActiveRout
                                         >
                                             <option value="">Root (No Suite)</option>
                                             {suites.map((s) => (
-                                                <option key={s.id} value={s.id}>{s.parent_id ? '  └ ' : ''}{s.title}</option>
+                                                <option key={s.id} value={s.id}>{s.parent_id ? '  └ ' : ''}{s.title} ({s.cases_count || 0})</option>
                                             ))}
                                         </select>
                                         <Button variant="secondary" onClick={() => setIsCreatingSuite(true)} disabled={!selectedProject} className="px-3 bg-white dark:bg-zinc-900 shrink-0 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800">

@@ -21,6 +21,7 @@ export interface QaseSuite {
   preconditions: string
   position: number
   parent_id: number | null
+  cases_count?: number
 }
 
 export interface QaseTestCase {
