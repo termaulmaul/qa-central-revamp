@@ -1947,19 +1947,19 @@ const AIPlaygroundPage = () => {
           <span className="font-medium text-sm text-zinc-800 dark:text-zinc-200">Configuration</span>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5 space-y-8 bg-zinc-50 dark:bg-zinc-900/10">
+        <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-zinc-50 dark:bg-zinc-900/10">
           
           {/* Section: Model */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-1.5">
               <Server size={14} className="text-zinc-500" />
               <h4 className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">Model</h4>
             </div>
             
-            <div className="space-y-3">
+            <div className="space-y-2">
               {llmState.models.length > 0 ? (
                 <select 
-                  className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 hover:border-blue-500 spring-transition appearance-none focus:outline-none focus:border-blue-500"
+                  className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-2.5 py-1.5 text-sm text-zinc-800 dark:text-zinc-200 hover:border-blue-500 spring-transition appearance-none focus:outline-none focus:border-blue-500"
                   value={llmState.model}
                   onChange={(e) => updateLLMState({ model: e.target.value })}
                 >
@@ -1971,15 +1971,15 @@ const AIPlaygroundPage = () => {
                   placeholder="e.g. llama3, gpt-4" 
                   value={llmState.model}
                   onChange={(e) => updateLLMState({ model: e.target.value })}
-                  className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 hover:border-blue-500 spring-transition focus:outline-none focus:border-blue-500"
+                  className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-2.5 py-1.5 text-sm text-zinc-800 dark:text-zinc-200 hover:border-blue-500 spring-transition focus:outline-none focus:border-blue-500"
                 />
               )}
             </div>
             
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <label className="text-xs text-zinc-600 dark:text-zinc-400">Thinking</label>
               <select 
-                className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 hover:border-blue-500 spring-transition appearance-none focus:outline-none focus:border-blue-500"
+                className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-2.5 py-1.5 text-sm text-zinc-800 dark:text-zinc-200 hover:border-blue-500 spring-transition appearance-none focus:outline-none focus:border-blue-500"
                 value={llmState.thinking}
                 onChange={(e) => updateLLMState({ thinking: e.target.value })}
               >
@@ -1992,15 +1992,15 @@ const AIPlaygroundPage = () => {
           </div>
 
           {/* Section: Chat */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-1.5">
               <MessageSquare size={14} className="text-zinc-500" />
               <h4 className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">Chat</h4>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               {/* Temperature */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-zinc-700 dark:text-zinc-300">Temperature</span>
                   <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">{(llmState.temperature ?? 0.7).toFixed(2)}</span>
@@ -2009,7 +2009,7 @@ const AIPlaygroundPage = () => {
               </div>
 
               {/* Max Tokens */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-zinc-700 dark:text-zinc-300">Max Tokens</span>
                   <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">{llmState.maxTokens ?? 2048}</span>
@@ -2018,7 +2018,7 @@ const AIPlaygroundPage = () => {
               </div>
 
               {/* Top P */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-zinc-700 dark:text-zinc-300">Top P</span>
                   <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">{(llmState.topP ?? 0.9).toFixed(2)}</span>
@@ -2027,7 +2027,7 @@ const AIPlaygroundPage = () => {
               </div>
 
               {/* Top K */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-zinc-700 dark:text-zinc-300">Top K</span>
                   <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">{llmState.topK ?? 40}</span>
@@ -2036,7 +2036,7 @@ const AIPlaygroundPage = () => {
               </div>
 
               {/* Min P */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-zinc-700 dark:text-zinc-300">Min P</span>
                   <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">{(llmState.minP ?? 0.05).toFixed(2)}</span>
@@ -2049,7 +2049,7 @@ const AIPlaygroundPage = () => {
           <div className="w-full h-px bg-zinc-100 dark:bg-zinc-800/50"></div>
 
           {/* Performance Metrics */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Activity size={12} className="text-blue-600 dark:text-blue-400" /> Performance
@@ -2060,22 +2060,22 @@ const AIPlaygroundPage = () => {
               </span>
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-3">
-                <div className="text-xs text-zinc-600 dark:text-zinc-400 mb-1 font-medium">Prefill (t/s)</div>
-                <div className="text-lg font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.prefillTs}</div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2">
+                <div className="text-[10px] text-zinc-600 dark:text-zinc-400 mb-0.5 font-medium">Prefill (t/s)</div>
+                <div className="text-base font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.prefillTs}</div>
               </div>
-              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-3">
-                <div className="text-xs text-zinc-600 dark:text-zinc-400 mb-1 font-medium">Token Gen (t/s)</div>
-                <div className="text-lg font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.tokenGenTs}</div>
+              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2">
+                <div className="text-[10px] text-zinc-600 dark:text-zinc-400 mb-0.5 font-medium">Token Gen (t/s)</div>
+                <div className="text-base font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.tokenGenTs}</div>
               </div>
-              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-3">
-                <div className="text-xs text-zinc-600 dark:text-zinc-400 mb-1 font-medium">Thinking (s)</div>
-                <div className="text-lg font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.thinkingS}</div>
+              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2">
+                <div className="text-[10px] text-zinc-600 dark:text-zinc-400 mb-0.5 font-medium">Thinking (s)</div>
+                <div className="text-base font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.thinkingS}</div>
               </div>
-              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-3">
-                <div className="text-xs text-zinc-600 dark:text-zinc-400 mb-1 font-medium">Duration (s)</div>
-                <div className="text-lg font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.durationS}</div>
+              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2">
+                <div className="text-[10px] text-zinc-600 dark:text-zinc-400 mb-0.5 font-medium">Duration (s)</div>
+                <div className="text-base font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.durationS}</div>
               </div>
             </div>
           </div>
