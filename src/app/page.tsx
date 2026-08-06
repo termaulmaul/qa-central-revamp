@@ -1767,6 +1767,67 @@ const QaseIntegrationPage = ({ setActiveRoute, testCases = [] }: { setActiveRout
   );
 };
 
+const ChatMessage = ({ msg, idx, onEdit, onDelete }: { msg: any, idx: number, onEdit: (msg: string) => void, onDelete: (idx: number) => void }) => {
+  const [copied, setCopied] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  
+  const handleCopy = () => {
+    navigator.clipboard.writeText(msg.content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  
+  const handleCopyMarkdown = () => {
+    let md = msg.content;
+    if (msg.thinking) {
+      md = `> Thinking:\n> ${msg.thinking.replace(/\n/g, '\n> ')}\n\n${md}`;
+    }
+    navigator.clipboard.writeText(md);
+    setShowMenu(false);
+  };
+
+  return (
+    <div className={`group flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} mb-2`}>
+      <div className={`max-w-[85%] rounded-xl p-3 text-sm ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200'}`}>
+        {msg.thinking && (
+          <div className="mb-2 p-2 rounded bg-black/10 dark:bg-black/20 text-xs font-mono text-zinc-700 dark:text-zinc-400 whitespace-pre-wrap italic">
+            <div className="font-semibold mb-1 flex items-center gap-1"><Cpu size={10} /> Thinking</div>
+            {msg.thinking}
+          </div>
+        )}
+        <div className="whitespace-pre-wrap break-words">{msg.content}</div>
+      </div>
+      
+      {/* Action Bar (visible on hover) */}
+      <div className={`flex items-center gap-1 mt-1 opacity-0 group-hover:opacity-100 transition-opacity ${msg.role === 'user' ? 'justify-end pr-1' : 'justify-start pl-1'}`}>
+        <button onClick={() => onEdit(msg.content)} className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 rounded" title="Edit">
+          <Edit3 size={14} />
+        </button>
+        <button onClick={handleCopy} className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 rounded" title="Copy">
+          {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+        </button>
+        
+        <div className="relative">
+          <button onClick={() => setShowMenu(!showMenu)} onBlur={() => setTimeout(() => setShowMenu(false), 200)} className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 rounded" title="More">
+            <MoreHorizontal size={14} />
+          </button>
+          
+          {showMenu && (
+            <div className={`absolute top-full mt-1 ${msg.role === 'user' ? 'right-0' : 'left-0'} w-36 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg overflow-hidden z-20 py-1`}>
+              <button onMouseDown={(e) => { e.preventDefault(); handleCopyMarkdown(); }} className="w-full text-left px-3 py-1.5 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                Copy Markdown
+              </button>
+              <button onMouseDown={(e) => { e.preventDefault(); onDelete(idx); setShowMenu(false); }} className="w-full text-left px-3 py-1.5 text-xs hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400">
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AIPlaygroundPage = () => {
   const llmState = useLLMState();
   const [prompt, setPrompt] = useState("");
@@ -1868,17 +1929,17 @@ const AIPlaygroundPage = () => {
           ) : (
             <div className="flex flex-col gap-4 relative z-10 pb-4">
               {llmState.chatHistory.map((msg, idx) => (
-                <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                  <div className={`max-w-[85%] rounded-xl p-3 text-sm ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200'}`}>
-                    {msg.thinking && (
-                      <div className="mb-2 p-2 rounded bg-black/10 dark:bg-black/20 text-xs font-mono text-zinc-700 dark:text-zinc-400 whitespace-pre-wrap italic">
-                        <div className="font-semibold mb-1 flex items-center gap-1"><Cpu size={10} /> Thinking</div>
-                        {msg.thinking}
-                      </div>
-                    )}
-                    <div className="whitespace-pre-wrap break-words">{msg.content}</div>
-                  </div>
-                </div>
+                <ChatMessage 
+                  key={idx} 
+                  msg={msg} 
+                  idx={idx} 
+                  onEdit={(content) => setPrompt(content)} 
+                  onDelete={(i) => updateLLMState((prev) => {
+                    const newHistory = [...prev.chatHistory];
+                    newHistory.splice(i, 1);
+                    return { chatHistory: newHistory };
+                  })} 
+                />
               ))}
               {llmState.isGenerating && (
                 <div className="flex items-start">
