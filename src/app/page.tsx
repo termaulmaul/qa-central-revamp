@@ -2061,21 +2061,38 @@ const AIPlaygroundPage = () => {
             </div>
             
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2">
-                <div className="text-[10px] text-zinc-600 dark:text-zinc-400 mb-0.5 font-medium">Prefill (t/s)</div>
-                <div className="text-base font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.prefillTs}</div>
+              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 flex flex-col justify-between">
+                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-2">Prefill (t/s)</div>
+                <div className="flex justify-between items-end">
+                  <div className="text-xl font-semibold text-zinc-800 dark:text-zinc-100 leading-none">{llmState.telemetry.prefillTs}</div>
+                  {llmState.telemetry.prefillTokens !== undefined && (
+                    <div className="text-xs text-zinc-600 dark:text-zinc-300">{llmState.telemetry.prefillTokens} tok</div>
+                  )}
+                </div>
               </div>
-              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2">
-                <div className="text-[10px] text-zinc-600 dark:text-zinc-400 mb-0.5 font-medium">Token Gen (t/s)</div>
-                <div className="text-base font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.tokenGenTs}</div>
+              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 flex flex-col justify-between">
+                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-2">Token Gen (t/s)</div>
+                <div className="flex justify-between items-end">
+                  <div className="text-xl font-semibold text-zinc-800 dark:text-zinc-100 leading-none">{llmState.telemetry.tokenGenTs}</div>
+                  {llmState.telemetry.genTokens !== undefined && (
+                    <div className="text-xs text-zinc-600 dark:text-zinc-300">{llmState.telemetry.genTokens} tok</div>
+                  )}
+                </div>
               </div>
-              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2">
-                <div className="text-[10px] text-zinc-600 dark:text-zinc-400 mb-0.5 font-medium">Thinking (s)</div>
-                <div className="text-base font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.thinkingS}</div>
+              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 flex flex-col justify-between">
+                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-2">Thinking (s)</div>
+                <div className="flex justify-between items-end">
+                  <div className="text-xl font-semibold text-zinc-800 dark:text-zinc-100 leading-none">{llmState.telemetry.thinkingS}</div>
+                  {llmState.telemetry.thinkingTokens !== undefined && (
+                    <div className="text-xs text-zinc-600 dark:text-zinc-300">{llmState.telemetry.thinkingTokens} tok</div>
+                  )}
+                </div>
               </div>
-              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2">
-                <div className="text-[10px] text-zinc-600 dark:text-zinc-400 mb-0.5 font-medium">Duration (s)</div>
-                <div className="text-base font-mono text-zinc-700 dark:text-zinc-300">{llmState.telemetry.durationS}</div>
+              <div className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 flex flex-col justify-between">
+                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-2">Duration (s)</div>
+                <div className="flex justify-between items-end">
+                  <div className="text-xl font-semibold text-zinc-800 dark:text-zinc-100 leading-none">{llmState.telemetry.durationS}</div>
+                </div>
               </div>
             </div>
           </div>
