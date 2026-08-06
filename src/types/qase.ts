@@ -1,17 +1,9 @@
 export type QaseStatus = 'idle' | 'testing' | 'connected' | 'syncing' | 'error';
 
-export type QaseProject = {
-  code: string;
-  title: string;
-  counts?: Record<string, number>;
-};
-
-export type QaseSuite = {
-  id: number | string;
-  title: string;
-  parentId?: number | string | null;
-  casesCount?: number;
-};
+// Canonical Qase shapes are defined in ../lib/qase-api (matches the Qase REST API).
+// Import + re-export them here so QaseState stays consistent with the API data.
+import type { QaseProject, QaseSuite } from '../lib/qase-api';
+export type { QaseProject, QaseSuite };
 
 export type QaseCaseStep = {
   action?: string;
