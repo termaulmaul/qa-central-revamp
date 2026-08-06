@@ -3,17 +3,26 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-const EMAIL_DOMAIN = "qacentral.app";
-
 /**
- * Converts a login identifier to an email.
+ * Resolves a login identifier to the auth email.
  * - If it already looks like an email, use it as-is.
- * - Otherwise treat it as a username and map to `<username>@qacentral.app`.
+ * - Otherwise treat it as a username and look up the associated email via the
+ *   `email_for_username` SECURITY DEFINER function (usernames are not stored on
+ *   auth.users, so a DB lookup is required).
  */
-function toEmail(identifier: string): string {
+async function resolveEmail(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  identifier: string,
+): Promise<string | null> {
   const trimmed = identifier.trim();
+  if (!trimmed) return null;
   if (trimmed.includes("@")) return trimmed.toLowerCase();
-  return `${trimmed.toLowerCase()}@${EMAIL_DOMAIN}`;
+
+  const { data, error } = await supabase.rpc("email_for_username", {
+    uname: trimmed,
+  });
+  if (error || !data) return null;
+  return String(data);
 }
 
 export async function signIn(
@@ -29,8 +38,14 @@ export async function signIn(
   }
 
   const supabase = await createClient();
+
+  const email = await resolveEmail(supabase, identifier);
+  if (!email) {
+    return { error: "Invalid username or password." };
+  }
+
   const { error } = await supabase.auth.signInWithPassword({
-    email: toEmail(identifier),
+    email,
     password,
   });
 
