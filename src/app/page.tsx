@@ -2504,9 +2504,6 @@ const TelemetryFooter = () => {
   const [qaseError, setQaseError] = useState<string>('');
   const [llmError, setLlmError] = useState<string>('');
   const [lastCheck, setLastCheck] = useState<string>('');
-  
-  const [showQaseTime, setShowQaseTime] = useState(false);
-  const [showLlmTime, setShowLlmTime] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -2593,18 +2590,9 @@ const TelemetryFooter = () => {
       <div className="flex items-center gap-6">
         <div 
           className="relative flex items-center gap-1.5 font-medium cursor-default group"
-          onClick={() => {
-            setShowQaseTime(true);
-            setTimeout(() => setShowQaseTime(false), 3000);
-          }}
         >
           <span className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">QASE</span>
           <div className={`w-1.5 h-1.5 rounded-full ${qaseStatus === 'ok' ? 'bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]' : qaseStatus === 'checking' ? 'bg-amber-500 animate-pulse' : 'bg-rose-500'}`} />
-          {showQaseTime && lastCheck && (
-            <span className="text-zinc-400 dark:text-zinc-500 ml-1 animate-in fade-in slide-in-from-left-1 duration-200">
-              {lastCheck}
-            </span>
-          )}
           
           {/* Custom Tooltip */}
           <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-zinc-800 dark:bg-zinc-100 text-zinc-200 dark:text-zinc-800 text-xs rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50">
@@ -2619,19 +2607,9 @@ const TelemetryFooter = () => {
         
         <div 
           className="relative flex items-center gap-1.5 font-medium cursor-default group"
-          onClick={() => {
-            setShowLlmTime(true);
-            setTimeout(() => setShowLlmTime(false), 3000);
-          }}
         >
           <span className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">LLM</span>
           <div className={`w-1.5 h-1.5 rounded-full ${llmStatus === 'ok' ? 'bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]' : llmStatus === 'checking' ? 'bg-amber-500 animate-pulse' : 'bg-rose-500'}`} />
-          {showLlmTime && lastCheck && (
-            <span className="text-zinc-400 dark:text-zinc-500 ml-1 animate-in fade-in slide-in-from-left-1 duration-200">
-              {lastCheck}
-            </span>
-          )}
-
           {/* Custom Tooltip */}
           <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-zinc-800 dark:bg-zinc-100 text-zinc-200 dark:text-zinc-800 text-xs rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50">
             <div className="font-semibold mb-1 border-b border-zinc-700 dark:border-zinc-300 pb-1">LLM Status: {llmStatus.toUpperCase()}</div>
