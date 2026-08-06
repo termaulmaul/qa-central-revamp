@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export type UserRole = "god" | "admin" | "qa" | "viewer";
+export type UserRole = "god" | "admin" | "qa" | "developer" | "viewer";
 
 export type SessionProfile = {
   id: string;
   email: string | null;
   username: string | null;
-  fullName: string | null;
+  displayName: string | null;
   role: UserRole;
 };
 
@@ -24,7 +24,7 @@ export async function getSessionProfile(): Promise<SessionProfile | null> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, full_name, role")
+    .select("username, display_name, role")
     .eq("id", user.id)
     .single();
 
@@ -32,7 +32,7 @@ export async function getSessionProfile(): Promise<SessionProfile | null> {
     id: user.id,
     email: user.email ?? null,
     username: profile?.username ?? null,
-    fullName: profile?.full_name ?? null,
+    displayName: profile?.display_name ?? null,
     role: (profile?.role as UserRole) ?? "viewer",
   };
 }

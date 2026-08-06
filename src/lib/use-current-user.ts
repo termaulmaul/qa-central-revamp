@@ -7,8 +7,8 @@ export type CurrentUser = {
   id: string;
   email: string | null;
   username: string | null;
-  fullName: string | null;
-  role: "god" | "admin" | "qa" | "viewer";
+  displayName: string | null;
+  role: "god" | "admin" | "qa" | "developer" | "viewer";
 };
 
 export function useCurrentUser() {
@@ -34,7 +34,7 @@ export function useCurrentUser() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("username, full_name, role")
+        .select("username, display_name, role")
         .eq("id", authUser.id)
         .single();
 
@@ -43,7 +43,7 @@ export function useCurrentUser() {
           id: authUser.id,
           email: authUser.email ?? null,
           username: profile?.username ?? null,
-          fullName: profile?.full_name ?? null,
+          displayName: profile?.display_name ?? null,
           role: (profile?.role as CurrentUser["role"]) ?? "viewer",
         });
         setLoading(false);
