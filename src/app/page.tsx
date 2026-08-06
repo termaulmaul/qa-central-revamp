@@ -1303,9 +1303,9 @@ const QaseIntegrationPage = ({ setActiveRoute, testCases = [] }: { setActiveRout
   const isGloballyConnected = qaseState.status === 'connected';
   
   const [testing, setTesting] = useState(false)
-  const [tokenValid, setTokenValid] = useState(isGloballyConnected)
-  const [projects, setProjects] = useState<QaseProject[]>(isGloballyConnected ? qaseState.projects : [])
-  const [selectedProject, setSelectedProject] = useState(isGloballyConnected ? qaseState.selectedProjectCode || '' : '')
+  const [tokenValid, setTokenValid] = useState(isGloballyConnected || !!token.trim())
+  const [projects, setProjects] = useState<QaseProject[]>(qaseState.projects || [])
+  const [selectedProject, setSelectedProject] = useState(qaseState.selectedProjectCode || '')
   const [isCreatingProject, setIsCreatingProject] = useState(false)
   const [newProjectTitle, setNewProjectTitle] = useState('')
   const [newProjectCode, setNewProjectCode] = useState('')
@@ -1335,17 +1335,19 @@ const QaseIntegrationPage = ({ setActiveRoute, testCases = [] }: { setActiveRout
   }
 
   useEffect(() => {
-    if (token.trim() && !tokenValid && !testing) {
-      handleTestConnection()
-    } else if (isGloballyConnected && projects.length === 0) {
-      // If globally connected but projects aren't loaded locally yet, fetch them
+    if (tokenValid && projects.length === 0) {
+      // If we have a token but projects aren't loaded locally yet, fetch them
       const api = new QaseAPI(token);
       api.getProjects().then(p => {
         setProjects(p);
         if (p.length > 0 && !selectedProject) {
           setSelectedProject(qaseState.selectedProjectCode || p[0].code);
         }
-      }).catch(console.error);
+      }).catch((err) => {
+        console.error(err);
+        showToast('Failed to load projects. Token might be invalid.', 'error');
+        setTokenValid(false);
+      });
     }
   }, [])
 
