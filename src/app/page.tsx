@@ -1998,7 +1998,7 @@ const AIPlaygroundPage = () => {
               <h4 className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">Chat</h4>
             </div>
             
-            <div className="space-y-5">
+            <div className="grid grid-cols-2 gap-4">
               {/* Temperature */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
