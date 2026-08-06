@@ -21,6 +21,7 @@ import { useQaseState, updateQaseState } from '../lib/qase-store';
 import type { QaseCapability } from '../types/qase';
 import { useLLMState, updateLLMState, testLLMChat, abortLLMChat, fetchLLMModels } from '../lib/llm-store';
 import { useQAGuidelinesState, updateQAGuidelinesState } from '../lib/qa-guidelines-store';
+import { useCurrentUser, triggerSignOut, type CurrentUser } from '../lib/use-current-user';
 
 export const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
   if (typeof window !== 'undefined') {
@@ -251,7 +252,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, activeRoute, setActiveRoute, isD
   );
 };
 
-const Header = ({ activeRoute }: { activeRoute: string }) => {
+const Header = ({ activeRoute, user }: { activeRoute: string, user: CurrentUser | null }) => {
   const routeNames: Record<string, string> = {
     'dashboard': 'Dashboard',
     'prd-intake': 'PRD Intake',
@@ -283,8 +284,25 @@ const Header = ({ activeRoute }: { activeRoute: string }) => {
           <button className="px-2 py-1 rounded text-zinc-600 dark:text-zinc-400  hover:text-zinc-700 dark:text-zinc-300 dark:hover:text-zinc-300  dark:text-zinc-300 spring-transition">EN</button>
         </div>
         
+        {/* Current user */}
+        {user && (
+          <div className="flex items-center gap-2 pl-1">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-[10px] font-semibold text-white uppercase">
+              {(user.username ?? user.email ?? '?').slice(0, 2)}
+            </div>
+            <div className="hidden sm:flex flex-col leading-tight">
+              <span className="text-xs font-medium text-zinc-900 dark:text-zinc-100">{user.username ?? user.email}</span>
+              <span className="text-[10px] uppercase tracking-wide text-blue-500 font-semibold">{user.role}</span>
+            </div>
+          </div>
+        )}
+
         {/* Logout */}
-        <IconButton icon={LogOut} className="text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:bg-rose-500/10" />
+        <IconButton
+          icon={LogOut}
+          onClick={() => triggerSignOut()}
+          className="text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:bg-rose-500/10"
+        />
       </div>
     </header>
   );
@@ -2722,6 +2740,7 @@ const TelemetryFooter = () => {
 };
 
 export default function App() {
+  const { user } = useCurrentUser();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeRoute, setActiveRoute] = useState('dashboard');
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -2790,7 +2809,7 @@ export default function App() {
           role="main"
           aria-label="Main content"
         >
-          <Header activeRoute={activeRoute} />
+          <Header activeRoute={activeRoute} user={user} />
           <div className="flex-1 relative overflow-hidden">
             {renderContent()}
           </div>
