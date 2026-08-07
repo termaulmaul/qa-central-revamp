@@ -101,7 +101,7 @@ export function useUserSettingsSync(userId: string | null) {
     },
     qase: {
       token: qase.token ?? '',
-      baseUrl: qase.baseUrl,
+      baseUrl: qase.baseUrl ?? '',
       selectedProjectCode: qase.selectedProjectCode ?? '',
     },
     guidelines: { guidelinesText: guidelines.guidelinesText },
