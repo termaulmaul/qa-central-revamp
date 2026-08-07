@@ -76,14 +76,14 @@ export function ModuleSelector({ modules, username }: { modules: QaModule[]; use
           </button>
         </header>
 
-        <div className="mx-auto flex min-h-[calc(100vh-8rem)] flex-col justify-center py-10">
-          <div className="mx-auto mb-10 max-w-3xl text-center">
+        <div className="mx-auto flex min-h-[calc(100vh-6rem)] flex-col justify-center py-4">
+          <div className="mx-auto mb-6 max-w-3xl text-center">
             <p className="mb-3 text-sm font-semibold tracking-[0.2em] text-blue-600 dark:text-blue-400">QA CENTRAL</p>
             <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Welcome back, {username}</h1>
             <p className="mt-4 text-pretty text-lg leading-7 text-zinc-600 dark:text-zinc-400">Select a module to view the dashboard and monitoring tools.</p>
           </div>
 
-          <section aria-label="QA Central modules" className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <section aria-label="QA Central modules" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {modules.map((module) => {
               const isAvailable = module.enabled && (module.status === "Available" || module.status === "Beta");
               const Icon = iconMap[module.icon];
@@ -94,16 +94,16 @@ export function ModuleSelector({ modules, username }: { modules: QaModule[]; use
                   disabled={!isAvailable}
                   onClick={() => selectModule(module)}
                   title={!isAvailable ? `${module.name} is ${module.status.toLowerCase()}` : `Open ${module.name}`}
-                  className="group flex min-h-64 flex-col items-center rounded-2xl border border-zinc-200/80 bg-white/85 p-6 text-center shadow-sm backdrop-blur transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:border-zinc-200 disabled:hover:shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900/75 dark:shadow-black/20 dark:focus-visible:ring-offset-zinc-950"
+                  className="group flex min-h-44 flex-col items-center rounded-2xl border border-zinc-200/80 bg-white/85 p-4 text-center shadow-sm backdrop-blur transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:border-zinc-200 disabled:hover:shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900/75 dark:shadow-black/20 dark:focus-visible:ring-offset-zinc-950"
                 >
-                  <span className="mb-5 flex size-14 items-center justify-center rounded-full bg-zinc-50 text-blue-600 transition-transform group-hover:scale-105 dark:bg-zinc-800 dark:text-blue-300">
-                    <Icon className="size-7" aria-hidden="true" />
+                  <span className="mb-3 flex size-10 items-center justify-center rounded-full bg-zinc-50 text-blue-600 transition-transform group-hover:scale-105 dark:bg-zinc-800 dark:text-blue-300">
+                    <Icon className="size-5" aria-hidden="true" />
                   </span>
-                  <span className="flex flex-1 flex-col gap-3">
-                    <span className="text-lg font-semibold leading-6">{module.name}</span>
-                    <span className="text-sm leading-6 text-zinc-600 dark:text-zinc-400">{module.description}</span>
+                  <span className="flex flex-1 flex-col gap-2">
+                    <span className="text-base font-semibold leading-5">{module.name}</span>
+                    <span className="line-clamp-2 text-sm leading-5 text-zinc-600 dark:text-zinc-400">{module.description}</span>
                   </span>
-                  <span className={`mt-5 rounded-full border px-2.5 py-1 text-xs font-medium ${statusStyles[module.status]}`}>
+                  <span className={`mt-3 rounded-full border px-2.5 py-1 text-xs font-medium ${statusStyles[module.status]}`}>
                     {module.status}
                   </span>
                 </button>
