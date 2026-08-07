@@ -1,4 +1,4 @@
-import type { QaseProject, QaseSuite, QaseCase } from '../../types/qase';
+import type { QaseProject, QaseSuite, QaseCase } from '@/types/qase';
 
 export interface GraphNode {
   id: string;

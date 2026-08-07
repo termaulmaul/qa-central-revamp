@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { QaseCapability, QaseState } from '../types/qase';
+import type { QaseCapability, QaseState } from '@/types/qase';
 
 export const DEFAULT_QASE_BASE_URL = 'https://api.qase.io/v1';
 

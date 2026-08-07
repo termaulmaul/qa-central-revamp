@@ -1,4 +1,4 @@
-import type { QaseProject } from '../../types/qase';
+import type { QaseProject } from '@/types/qase';
 
 interface QaseAPIResponse {
   status?: boolean;

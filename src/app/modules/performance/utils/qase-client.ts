@@ -5,7 +5,7 @@ import type {
   QaseProject,
   QaseStatus,
   QaseSuite,
-} from '../types/qase';
+} from '@/types/qase';
 
 type JsonObject = Record<string, unknown>;
 

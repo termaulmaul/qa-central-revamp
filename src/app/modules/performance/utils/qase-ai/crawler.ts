@@ -4,7 +4,7 @@ import { QaseCasesAPI } from './cases';
 import { QaseLearningCache } from './cache';
 import { QaseKnowledgeGraph } from './knowledge';
 import { QaseLearningEngine, type LearningResult } from './learning';
-import type { QaseProject } from '../../types/qase';
+import type { QaseProject } from '@/types/qase';
 import { toQaseCase, toQaseSuite } from './adapters';
 
 export interface CrawlProgress {

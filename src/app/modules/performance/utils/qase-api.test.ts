@@ -5,7 +5,10 @@ const originalFetch = globalThis.fetch
 afterEach(() => { globalThis.fetch = originalFetch })
 
 test('createSuite returns the full QaseSuite shape required by UI state', async () => {
-  globalThis.fetch = async () => Response.json({ status: true, result: { id: 42 } })
+  globalThis.fetch = Object.assign(
+    async () => Response.json({ status: true, result: { id: 42 } }),
+    { preconnect: () => undefined },
+  )
 
   const suite = await new QaseAPI('test-token').createSuite('GI', 'Stock', 7)
 

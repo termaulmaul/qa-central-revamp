@@ -1,7 +1,7 @@
 import { QaseKnowledgeGraph } from './knowledge';
 import { QasePatternMiner, type MinedPattern } from './patterns';
 import { QaseStepsAnalyzer } from './steps';
-import type { QaseCase } from '../../types/qase';
+import type { QaseCase } from '@/types/qase';
 
 export interface LearningResult {
   patterns: MinedPattern[];

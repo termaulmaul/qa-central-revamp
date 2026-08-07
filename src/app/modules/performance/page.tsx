@@ -22,6 +22,30 @@ import { Webhooks } from './tabs/WebhooksTab';
 import { Settings } from './tabs/SettingsTab';
 import { Overview as ExecuteTest } from './tabs/ExecuteTestTab';
 
+type DashboardRun = {
+  id: string | number;
+  script: string;
+  startedAt: string;
+  state?: string;
+};
+
+type DashboardSummary = {
+  healthScore?: number | null;
+  cpuPercent?: number | null;
+  memoryPercent?: number | null;
+  activeRunners?: number | null;
+  verdicts: string[];
+  recent: DashboardRun[];
+};
+
+type SystemStatus = {
+  memoryTotalGb?: number | null;
+  memoryUsedGb?: number | null;
+  loadAvg?: number | number[] | null;
+};
+
+type DashboardTrends = { runs?: DashboardRun[] };
+
 const IconButton = ({ icon: Icon, onClick, className = '', active = false }: { icon: React.ElementType, onClick?: () => void, className?: string, active?: boolean }) => (
   <button 
     onClick={onClick}
@@ -47,9 +71,9 @@ export default function PerformanceModulePage() {
   const isDarkMode = theme === 'dark';
   
   // Dashboard states
-  const [summary, setSummary] = useState<any>(null);
-  const [runs, setRuns] = useState<any[]>([]);
-  const [system, setSystem] = useState<any>(null);
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [runs, setRuns] = useState<DashboardRun[]>([]);
+  const [system, setSystem] = useState<SystemStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const requestId = useRef(0);
@@ -72,7 +96,7 @@ export default function PerformanceModulePage() {
     setLoading(true);
     setError('');
     const query = ''; 
-    const fail = (cause: any, clear: () => void) => {
+    const fail = (cause: unknown, clear: () => void) => {
       if (id !== requestId.current) return;
       clear();
       setError((current) => current || (cause instanceof Error ? cause.message : 'Unable to load dashboard'));
@@ -89,10 +113,13 @@ export default function PerformanceModulePage() {
     }
 
     fetch(`/api/dashboard/summary${query}`).then(fetchJson)
-      .then((data) => id === requestId.current && setSummary(data))
+      .then((data) => id === requestId.current && setSummary(data as DashboardSummary))
       .catch((err) => fail(err, () => setSummary(null))).finally(complete);
     fetch(`/api/dashboard/trends${query}`).then(fetchJson)
-      .then((data) => id === requestId.current && setRuns(Array.isArray(data?.runs) ? data.runs : []))
+      .then((data) => {
+        const trends = data as DashboardTrends;
+        if (id === requestId.current) setRuns(Array.isArray(trends.runs) ? trends.runs : []);
+      })
       .catch((err) => fail(err, () => setRuns([]))).finally(complete);
     fetch(`/api/sys-status${query}`).then(fetchJson)
       .then((data) => id === requestId.current && setSystem(data))
@@ -274,7 +301,7 @@ export default function PerformanceModulePage() {
                           <div
                             key={i}
                             className={`flex-1 rounded-t-sm transition-all duration-300 hover:opacity-80 ${v === 'SUCCEEDED' ? 'bg-emerald-500' : 'bg-rose-500'}`}
-                            style={{ height: `${Math.max(10, Math.random() * 90 + 10)}%` }}
+                            style={{ height: `${Math.max(10, (i * 37) % 90 + 10)}%` }}
                             title={v}
                           />
                         ))
@@ -328,7 +355,7 @@ export default function PerformanceModulePage() {
                           </div>
                           <div className="flex justify-between items-center pb-2 border-b border-zinc-100 dark:border-zinc-800/50">
                             <span className="text-zinc-500 text-xs">Load Average:</span>
-                            <span className="font-mono text-sm">{system?.loadAvg?.join(', ') ?? 'Unavailable'}</span>
+                            <span className="font-mono text-sm">{Array.isArray(system?.loadAvg) ? system.loadAvg.join(', ') : unavailable(system?.loadAvg)}</span>
                           </div>
                         </div>
                       )}

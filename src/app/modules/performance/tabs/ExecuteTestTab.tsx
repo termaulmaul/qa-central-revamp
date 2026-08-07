@@ -322,7 +322,11 @@ const ExecuteTestContent = ({ onNavigate }: { onNavigate: (id: string) => void }
     try {
       const suffix = `?projectId=${encodeURIComponent(projectId)}`;
       const snapshotResponse = await fetch(`/api/queue${suffix}`, { credentials: 'include' });
-      const snapshot = await snapshotResponse.json() as any & { error?: string };
+      const snapshot = await snapshotResponse.json() as {
+        error?: string;
+        current?: { script?: string };
+        queue: Array<{ script?: string }>;
+      };
       if (!snapshotResponse.ok) throw new Error(snapshot.error ?? 'Unable to load queue');
       const occupied = new Set([
         snapshot.current?.script,
