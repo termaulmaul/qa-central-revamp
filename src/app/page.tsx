@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Search, Command, LayoutGrid, Sparkles, Code2, 
   CheckCircle2, BarChart3, Settings, Database, 
-  ChevronRight, ChevronLeft, Bell, User, MoreHorizontal,
+  ChevronRight, ChevronLeft, Bell, MoreHorizontal,
   Filter, Plus, Play, GitPullRequest, ShieldAlert,
   MessageSquare, FileCode2, Zap, Send, RotateCcw, Copy,
   LayoutDashboard, FileText, ShieldCheck, Library, RefreshCcw,
@@ -182,7 +182,7 @@ const Button = ({ children, variant = 'primary', icon: Icon, className = '', onC
   );
 };
 
-const Sidebar = ({ isCollapsed, setIsCollapsed, activeRoute, setActiveRoute, isDarkMode, setIsDarkMode }: { isCollapsed: boolean, setIsCollapsed: (val: boolean) => void, activeRoute: string, setActiveRoute: (val: string) => void, isDarkMode: boolean, setIsDarkMode: (val: boolean) => void }) => {
+const Sidebar = ({ isCollapsed, setIsCollapsed, activeRoute, setActiveRoute, isDarkMode, setIsDarkMode, user }: { isCollapsed: boolean, setIsCollapsed: (val: boolean) => void, activeRoute: string, setActiveRoute: (val: string) => void, isDarkMode: boolean, setIsDarkMode: (val: boolean) => void, user: CurrentUser | null }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'prd-intake', label: 'PRD Intake', icon: FileText },
@@ -234,6 +234,30 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, activeRoute, setActiveRoute, isD
 
       {/* Bottom Actions */}
       <div className="p-2 border-t border-zinc-200 dark:border-zinc-800 mt-auto flex flex-col gap-1">
+        {user && (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-zinc-50 dark:bg-zinc-900/70">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-500 text-[10px] font-semibold text-white uppercase">
+              {(user.username ?? user.displayName ?? user.email ?? '?').slice(0, 2)}
+            </div>
+            {!isCollapsed && (
+              <div className="min-w-0 flex-1 leading-tight">
+                <span className="block truncate text-xs font-medium text-zinc-900 dark:text-zinc-100">
+                  {user.displayName ?? user.username ?? user.email}
+                </span>
+                <span className="text-[10px] uppercase tracking-wide text-blue-500 font-semibold">
+                  {user.role}
+                </span>
+              </div>
+            )}
+            {!isCollapsed && (
+              <IconButton
+                icon={LogOut}
+                onClick={() => triggerSignOut()}
+                className="shrink-0 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:bg-rose-500/10"
+              />
+            )}
+          </div>
+        )}
         <button 
           onClick={() => setIsDarkMode(!isDarkMode)}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-100 dark:bg-zinc-800/50 hover:text-zinc-800 dark:text-zinc-200 spring-transition text-sm"
@@ -242,12 +266,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, activeRoute, setActiveRoute, isD
             {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
           </div>
           {!isCollapsed && <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>}
-        </button>
-        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-100 dark:bg-zinc-800/50 hover:text-zinc-800 dark:text-zinc-200 spring-transition text-sm">
-          <div className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-300">
-            <User size={12} />
-          </div>
-          {!isCollapsed && <span>John Doe</span>}
         </button>
       </div>
     </div>
@@ -286,25 +304,7 @@ const Header = ({ activeRoute, user }: { activeRoute: string, user: CurrentUser 
           <button className="px-2 py-1 rounded text-zinc-600 dark:text-zinc-400  hover:text-zinc-700 dark:text-zinc-300 dark:hover:text-zinc-300  dark:text-zinc-300 spring-transition">EN</button>
         </div>
         
-        {/* Current user */}
-        {user && (
-          <div className="flex items-center gap-2 pl-1">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-[10px] font-semibold text-white uppercase">
-              {(user.username ?? user.email ?? '?').slice(0, 2)}
-            </div>
-            <div className="hidden sm:flex flex-col leading-tight">
-              <span className="text-xs font-medium text-zinc-900 dark:text-zinc-100">{user.username ?? user.email}</span>
-              <span className="text-[10px] uppercase tracking-wide text-blue-500 font-semibold">{user.role}</span>
-            </div>
-          </div>
-        )}
 
-        {/* Logout */}
-        <IconButton
-          icon={LogOut}
-          onClick={() => triggerSignOut()}
-          className="text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:bg-rose-500/10"
-        />
       </div>
     </header>
   );
@@ -2807,6 +2807,7 @@ export default function App() {
           setActiveRoute={setActiveRoute}
           isDarkMode={isDarkMode}
           setIsDarkMode={(val: boolean) => setTheme(val ? 'dark' : 'light')}
+          user={user}
         />
         
         <main 
