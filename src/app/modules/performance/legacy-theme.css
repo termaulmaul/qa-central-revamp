@@ -1,0 +1,269 @@
+@reference "../../globals.css";
+
+@layer components {
+  .pt-page-stack {
+    @apply flex flex-col gap-6 w-full max-w-5xl mx-auto p-4 sm:p-6 lg:p-8;
+  }
+  
+  .page-kicker {
+    @apply shrink-0 mb-6;
+  }
+  
+  .eyebrow {
+    @apply hidden; /* Removed to match Test Case Generator style */
+  }
+  
+  .page-title {
+    @apply text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1;
+  }
+  
+  .page-subtitle {
+    @apply text-sm text-zinc-500 dark:text-zinc-400;
+  }
+  
+  .pt-input {
+    @apply w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm;
+  }
+  
+  .pt-select {
+    @apply w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm appearance-none;
+  }
+  
+  .panel {
+    @apply bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden flex flex-col shadow-sm;
+  }
+  
+  .ph {
+    @apply px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-900/20 shrink-0 text-sm font-medium text-zinc-800 dark:text-zinc-200;
+  }
+  
+  .ph h3 {
+    @apply font-medium text-zinc-900 dark:text-zinc-100 text-base;
+  }
+  
+  .ph-meta {
+    @apply text-[10px] font-mono uppercase bg-zinc-200/50 dark:bg-zinc-800/50 px-2 py-0.5 rounded text-zinc-600 dark:text-zinc-400;
+  }
+  
+  .panel-body {
+    @apply p-6 bg-transparent flex-1 overflow-y-auto text-sm text-zinc-700 dark:text-zinc-300;
+  }
+  
+  .status-inline {
+    @apply flex items-center gap-2 text-xs font-medium text-zinc-500;
+  }
+  
+  .status-dot {
+    @apply w-2 h-2 rounded-full inline-block bg-zinc-400 dark:bg-zinc-600;
+  }
+  
+  .status-dot.pt-pulse {
+    @apply bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse;
+  }
+  
+  .pt-tag {
+    @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 ml-2;
+  }
+  
+  .pt-tag-toggle {
+    @apply cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors;
+  }
+  
+  .pt-tag-toggle.on {
+    @apply bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20;
+  }
+
+  .pt-live {
+    @apply px-6 pb-6 pt-0 mt-2 space-y-2;
+  }
+
+  .pt-status {
+    @apply text-sm text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-md px-3 py-2 font-mono;
+  }
+
+  .pt-error {
+    @apply text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-md px-3 py-2 font-mono;
+  }
+
+  .pt-ghost-btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 shadow-sm active:scale-[0.98];
+  }
+  
+  .pt-primary-btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border border-transparent bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow active:scale-[0.98];
+  }
+  
+  .pt-danger-btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border border-transparent bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow active:scale-[0.98];
+  }
+  
+  .pt-icon-btn {
+    @apply p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors;
+  }
+
+  .pt-icon-btn.is-emerald {
+    @apply text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/30;
+  }
+
+  .pt-icon-btn.is-red {
+    @apply text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/30;
+  }
+
+  .pt-icon-btn.is-cyan {
+    @apply text-cyan-600 hover:text-cyan-700 hover:bg-cyan-50 dark:hover:bg-cyan-900/30;
+  }
+
+  .pt-icon-btn.is-amber {
+    @apply text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-900/30;
+  }
+  
+  .pt-run-grid {
+    @apply grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-6;
+  }
+  
+  .pt-run-cell {
+    @apply flex flex-col p-3 rounded-lg bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800;
+  }
+  
+  .pt-run-cell-label {
+    @apply text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1;
+  }
+  
+  .pt-run-cell-value {
+    @apply font-mono text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate;
+  }
+  
+  .tbl-scroll {
+    @apply overflow-x-auto p-0 rounded-lg border border-zinc-200 dark:border-zinc-800;
+  }
+  
+  table.mock {
+    @apply w-full text-left text-sm border-collapse;
+  }
+  
+  table.mock thead th {
+    @apply px-4 py-3 text-blue-700 dark:text-blue-400 font-semibold text-xs uppercase tracking-wider border-b border-zinc-200 dark:border-zinc-800 bg-blue-50/50 dark:bg-blue-900/10 sticky top-0;
+  }
+  
+  table.mock tbody tr {
+    @apply hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 transition-colors border-b border-zinc-100 dark:border-zinc-800/50 last:border-0;
+  }
+  
+  table.mock tbody td {
+    @apply px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300;
+  }
+  
+  .table-primary {
+    @apply text-zinc-900 dark:text-zinc-100 font-medium;
+  }
+  
+  .table-secondary {
+    @apply text-zinc-500 dark:text-zinc-400 text-xs;
+  }
+  
+  .text-right {
+    @apply text-right;
+  }
+  
+  .fs-xs {
+    @apply text-xs;
+  }
+  
+  .nowrap {
+    @apply whitespace-nowrap;
+  }
+  
+  .empty-state {
+    @apply p-12 text-center text-zinc-500 dark:text-zinc-400 text-sm italic;
+  }
+  
+  .pt-scenario-badge {
+    @apply ml-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20;
+  }
+  
+  .pt-run-progress {
+    @apply mt-4 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800;
+  }
+  
+  .pt-run-progress-head {
+    @apply flex justify-between items-center mb-3;
+  }
+  
+  .pt-run-progress-title {
+    @apply text-sm font-medium text-zinc-800 dark:text-zinc-200;
+  }
+  
+  .pt-run-running {
+    @apply text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-2;
+  }
+  
+  .pt-progress-track {
+    @apply h-2 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden mb-4;
+  }
+  
+  .pt-progress-track span {
+    @apply h-full bg-blue-500 block transition-all duration-1000 ease-linear;
+  }
+  
+  .pt-run-kpis {
+    @apply grid grid-cols-2 sm:grid-cols-4 gap-4;
+  }
+  
+  .pt-kpi-label {
+    @apply block text-[10px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1;
+  }
+  
+  .pt-kpi-value {
+    @apply block font-mono text-sm text-zinc-900 dark:text-zinc-100;
+  }
+  
+  .pt-run-percent {
+    @apply mt-3 text-right text-[10px] text-zinc-500 dark:text-zinc-500 font-mono;
+  }
+  
+  .pt-modal-overlay {
+    @apply fixed inset-0 z-50 bg-zinc-900/50 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6;
+  }
+  
+  .pt-modal-card {
+    @apply bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden;
+  }
+  
+  .pt-modal-head {
+    @apply px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/80 flex justify-between items-center shrink-0;
+  }
+  
+  .pt-modal-title {
+    @apply text-sm font-medium text-zinc-900 dark:text-zinc-100 flex items-center gap-3;
+  }
+  
+  .pt-modal-id {
+    @apply font-mono text-xs text-zinc-500 bg-zinc-200/50 dark:bg-zinc-800 px-2 py-0.5 rounded;
+  }
+  
+  .pt-modal-head-actions {
+    @apply flex items-center gap-4;
+  }
+  
+  .pt-livelog-status {
+    @apply text-xs font-medium flex items-center gap-2;
+  }
+  
+  .pt-livelog-status.is-live { @apply text-emerald-500; }
+  .pt-livelog-status.is-waiting { @apply text-amber-500; }
+  .pt-livelog-status.is-done { @apply text-zinc-500; }
+  .pt-livelog-status.is-offline { @apply text-rose-500; }
+  .pt-livelog-status.is-connecting { @apply text-blue-500; }
+  
+  .pt-modal-close {
+    @apply text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 p-1;
+  }
+  
+  .pt-modal-body {
+    @apply flex-1 p-0 overflow-hidden bg-zinc-950;
+  }
+  
+  .pt-log-view {
+    @apply w-full h-full p-4 overflow-y-auto font-mono text-xs leading-relaxed text-zinc-300;
+  }
+}

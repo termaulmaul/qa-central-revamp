@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { 
   Search, Command, LayoutGrid, Sparkles, Code2, 
@@ -13,7 +13,8 @@ import {
   AlertCircle, ArrowLeft, Clock, ChevronDown,
   SlidersHorizontal, Activity, Cpu, Terminal, Bot,
   Key, Server, BookOpen, Save, Shield, Sun, Moon,
-  X, Edit3, Trash2, Network, Loader, Download, Paperclip, Square
+  X, Edit3, Trash2, Network, Loader, Download, Paperclip, Square,
+  List, History, Folder
 } from 'lucide-react';
 import { QAEngine, type CoverageItem, type TestCase } from '../lib/qa-engine/qa-engine';
 import { PDFParser } from '../lib/pdf-parser';
@@ -290,7 +291,7 @@ const Header = ({ activeRoute, user }: { activeRoute: string, user: CurrentUser 
     'test-catalogue': 'Test Catalogue',
     'qase-integration': 'Qase Integration',
     'ai-playground': 'AI Playground',
-    'settings': 'Settings'
+    'settings': 'Settings',
   };
 
   return (
