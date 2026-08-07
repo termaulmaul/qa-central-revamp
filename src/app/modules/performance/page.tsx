@@ -22,6 +22,30 @@ import { Webhooks } from './tabs/WebhooksTab';
 import { Settings } from './tabs/SettingsTab';
 import { Overview as ExecuteTest } from './tabs/ExecuteTestTab';
 
+type DashboardRun = {
+  id: string | number;
+  script: string;
+  startedAt: string;
+  state?: string;
+};
+
+type DashboardSummary = {
+  healthScore?: number | null;
+  cpuPercent?: number | null;
+  memoryPercent?: number | null;
+  activeRunners?: number | null;
+  verdicts: string[];
+  recent: DashboardRun[];
+};
+
+type SystemStatus = {
+  memoryTotalGb?: number | null;
+  memoryUsedGb?: number | null;
+  loadAvg?: number | number[] | null;
+};
+
+type DashboardTrends = { runs?: DashboardRun[] };
+
 const IconButton = ({ icon: Icon, onClick, className = '', active = false }: { icon: React.ElementType, onClick?: () => void, className?: string, active?: boolean }) => (
   <button 
     onClick={onClick}
@@ -47,9 +71,9 @@ export default function PerformanceModulePage() {
   const isDarkMode = theme === 'dark';
   
   // Dashboard states
-  const [summary, setSummary] = useState<any>(null);
-  const [runs, setRuns] = useState<any[]>([]);
-  const [system, setSystem] = useState<any>(null);
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [runs, setRuns] = useState<DashboardRun[]>([]);
+  const [system, setSystem] = useState<SystemStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const requestId = useRef(0);
@@ -72,7 +96,7 @@ export default function PerformanceModulePage() {
     setLoading(true);
     setError('');
     const query = ''; 
-    const fail = (cause: any, clear: () => void) => {
+    const fail = (cause: unknown, clear: () => void) => {
       if (id !== requestId.current) return;
       clear();
       setError((current) => current || (cause instanceof Error ? cause.message : 'Unable to load dashboard'));
@@ -89,10 +113,13 @@ export default function PerformanceModulePage() {
     }
 
     fetch(`/api/dashboard/summary${query}`).then(fetchJson)
-      .then((data) => id === requestId.current && setSummary(data))
+      .then((data) => id === requestId.current && setSummary(data as DashboardSummary))
       .catch((err) => fail(err, () => setSummary(null))).finally(complete);
     fetch(`/api/dashboard/trends${query}`).then(fetchJson)
-      .then((data) => id === requestId.current && setRuns(Array.isArray(data?.runs) ? data.runs : []))
+      .then((data) => {
+        const trends = data as DashboardTrends;
+        if (id === requestId.current) setRuns(Array.isArray(trends.runs) ? trends.runs : []);
+      })
       .catch((err) => fail(err, () => setRuns([]))).finally(complete);
     fetch(`/api/sys-status${query}`).then(fetchJson)
       .then((data) => id === requestId.current && setSystem(data))
@@ -114,9 +141,9 @@ export default function PerformanceModulePage() {
   const noMetrics = !system || (system.memoryTotalGb == null && system.memoryUsedGb == null && system.loadAvg == null);
 
   return (
-    <main className="flex h-screen w-full bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50 overflow-hidden">
+    <main className="flex h-screen w-screen overflow-hidden bg-white font-sans text-zinc-900 selection:bg-blue-500/30 dark:bg-zinc-950 dark:text-zinc-100">
       <aside 
-        className={`hidden md:flex h-full border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex-col spring-transition ${isCollapsed ? 'w-16' : 'w-[240px]'}`}
+        className={`hidden h-full flex-col border-r border-zinc-200 bg-white spring-transition dark:border-zinc-800 dark:bg-zinc-950 md:flex ${isCollapsed ? 'w-16' : 'w-[240px]'}`}
         style={{ minWidth: isCollapsed ? '64px' : '240px' }}
       >
         {/* Workspace Header */}
@@ -203,8 +230,8 @@ export default function PerformanceModulePage() {
         </div>
       </aside>
 
-      <section className="flex min-w-0 flex-1 flex-col h-screen overflow-hidden">
-        <header className="flex min-h-12 items-center border-b border-zinc-200 bg-white/90 px-4 dark:border-zinc-800 dark:bg-zinc-950/90 sm:px-6 shrink-0">
+      <section className="relative z-10 flex h-screen min-w-0 flex-1 flex-col overflow-hidden bg-white shadow-[-10px_0_30px_rgba(0,0,0,0.05)] dark:bg-zinc-950 dark:shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
+        <header className="sticky top-0 z-10 flex min-h-12 shrink-0 items-center border-b border-zinc-200 bg-white/80 px-4 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80 sm:px-6">
           <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">
             <Link href="/modules" className="hover:text-zinc-900 dark:hover:text-zinc-100">QA Central</Link>
             <span className="px-2">/</span>
@@ -274,7 +301,7 @@ export default function PerformanceModulePage() {
                           <div
                             key={i}
                             className={`flex-1 rounded-t-sm transition-all duration-300 hover:opacity-80 ${v === 'SUCCEEDED' ? 'bg-emerald-500' : 'bg-rose-500'}`}
-                            style={{ height: `${Math.max(10, Math.random() * 90 + 10)}%` }}
+                            style={{ height: `${Math.max(10, (i * 37) % 90 + 10)}%` }}
                             title={v}
                           />
                         ))
@@ -328,7 +355,7 @@ export default function PerformanceModulePage() {
                           </div>
                           <div className="flex justify-between items-center pb-2 border-b border-zinc-100 dark:border-zinc-800/50">
                             <span className="text-zinc-500 text-xs">Load Average:</span>
-                            <span className="font-mono text-sm">{system?.loadAvg?.join(', ') ?? 'Unavailable'}</span>
+                            <span className="font-mono text-sm">{Array.isArray(system?.loadAvg) ? system.loadAvg.join(', ') : unavailable(system?.loadAvg)}</span>
                           </div>
                         </div>
                       )}

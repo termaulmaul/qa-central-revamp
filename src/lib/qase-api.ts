@@ -1,27 +1,29 @@
 const QASE_API_BASE = '/api/qase'
 
 export interface QaseProject {
-  id: number
+  id?: number
   code: string
   title: string
-  description: string
-  access: string
-  group: string | null
-  counts: {
-    cases: number
-    suites: number
-    runs: number
+  description?: string
+  access?: string
+  group?: string | null
+  counts?: {
+    cases?: number
+    suites?: number
+    runs?: number
   }
 }
 
 export interface QaseSuite {
-  id: number
+  id: number | string
   title: string
-  description: string
-  preconditions: string
-  position: number
-  parent_id: number | null
+  description?: string
+  preconditions?: string
+  position?: number
+  parent_id?: number | null
+  parentId?: number | string | null
   cases_count?: number
+  casesCount?: number
 }
 
 export interface QaseTestCase {

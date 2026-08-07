@@ -104,10 +104,11 @@ export const fetchLLMModels = async () => {
   updateLLMState({ status: 'testing', error: undefined });
   try {
     const { baseUrl, apiToken } = loadLLMState();
-    const headers: Record<string, string> = {};
-    if (apiToken) headers['Authorization'] = `Bearer ${apiToken}`;
-    
-    const res = await fetch(`${baseUrl.replace(/\/+$/, '')}/models`, { headers });
+    const res = await fetch('/api/llm/models', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ baseUrl, apiToken }),
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     const models = data?.data?.map((m: any) => m.id) || [];
@@ -144,9 +145,6 @@ export const testLLMChat = async (message: string) => {
   });
 
   try {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (apiToken) headers['Authorization'] = `Bearer ${apiToken}`;
-    
     const bodyPayload: any = {
       model: model,
       messages: [...chatHistory, { role: 'user', content: message }],
@@ -156,10 +154,10 @@ export const testLLMChat = async (message: string) => {
     if (topP !== undefined) bodyPayload.top_p = topP;
     if (topK !== undefined) bodyPayload.top_k = topK;
 
-    const res = await fetch(`${baseUrl.replace(/\/+$/, '')}/chat/completions`, {
+    const res = await fetch('/api/llm/chat', {
       method: 'POST',
-      headers,
-      body: JSON.stringify(bodyPayload),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ baseUrl, apiToken, ...bodyPayload }),
       signal: currentAbortController.signal,
     });
     

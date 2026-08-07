@@ -2227,9 +2227,11 @@ const SettingsPage = () => {
     }
     updateLLMState({ status: 'testing', error: undefined });
     try {
-      const headers: Record<string, string> = {};
-      if (llmState.apiToken) headers['Authorization'] = `Bearer ${llmState.apiToken}`;
-      const res = await fetch(`${llmState.baseUrl.replace(/\/+$/, '')}/models`, { headers });
+      const res = await fetch('/api/llm/models', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ baseUrl: llmState.baseUrl, apiToken: llmState.apiToken }),
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       updateLLMState({ status: 'connected' });
       showToast("LLM Connection Successful!", "success");

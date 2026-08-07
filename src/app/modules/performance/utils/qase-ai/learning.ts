@@ -1,7 +1,7 @@
 import { QaseKnowledgeGraph } from './knowledge';
 import { QasePatternMiner, type MinedPattern } from './patterns';
 import { QaseStepsAnalyzer } from './steps';
-import type { QaseCase } from '../../types/qase';
+import type { QaseCase } from '@/types/qase';
 
 export interface LearningResult {
   patterns: MinedPattern[];
@@ -36,7 +36,7 @@ export class QaseLearningEngine {
     const patterns = this.patternMiner.mineAll(cases);
 
     const allSteps = cases.flatMap((tc) =>
-      (tc.steps ?? []).map((s) => ({ action: s.action, expected_result: s.expectedResult })),
+      (tc.steps ?? []).map((s: QaseCase['steps'][number]) => ({ action: s.action, expected_result: s.expectedResult })),
     );
 
     const stepAnalysis = this.stepsAnalyzer.analyze(allSteps);
@@ -63,7 +63,7 @@ export class QaseLearningEngine {
   ): QualityAssessment {
     const missingExpected = stepAnalysis.missingExpected;
     const poorStepQuality = cases.filter((tc) =>
-      (tc.steps ?? []).some((s) => {
+      (tc.steps ?? []).some((s: QaseCase['steps'][number]) => {
         const action = (s.action ?? '').trim();
         return action.length < 5 || action === 'click' || action === 'enter';
       }),

@@ -28,11 +28,11 @@ test('Qase state stays in memory and resets without credentials', () => {
 test('fetchQaseProjects uses proxy contract and normalizes entities', async () => {
   let path = '';
   let headers: HeadersInit | undefined;
-  globalThis.fetch = async (input, init) => {
+  globalThis.fetch = Object.assign(async (input: RequestInfo | URL, init?: RequestInit) => {
     path = String(input);
     headers = init?.headers;
     return Response.json({ status: true, result: { total: 1, entities: [{ code: 'DEMO', title: 'Demo' }] } });
-  };
+  }, { preconnect: () => undefined });
 
   const projects = await fetchQaseProjects();
 
@@ -42,7 +42,7 @@ test('fetchQaseProjects uses proxy contract and normalizes entities', async () =
 });
 
 test('fetchQaseCases maps suites, steps, and tags defensively', async () => {
-  globalThis.fetch = async () => Response.json({
+  globalThis.fetch = Object.assign(async () => Response.json({
     status: true,
     result: {
       entities: [{
@@ -53,7 +53,7 @@ test('fetchQaseCases maps suites, steps, and tags defensively', async () => {
         tags: [{ title: 'smoke' }],
       }],
     },
-  });
+  }), { preconnect: () => undefined });
 
   const cases = await fetchQaseCases('DEMO', [{ id: 3, title: 'Payments', parentId: null }]);
 

@@ -1,11 +1,11 @@
-import type { QaseCase, QaseSuite } from '../../types/qase';
+import type { QaseCase, QaseSuite } from '@/types/qase';
 import type { QaseCaseRaw } from './cases';
 import type { QaseSuiteRaw } from './suites';
 
 export const toQaseSuite = (suite: QaseSuiteRaw): QaseSuite => ({
   id: suite.id,
   title: suite.title,
-  parentId: suite.parent_id,
+  parentId: suite.parent_id ?? null,
   casesCount: suite.cases_count,
 });
 

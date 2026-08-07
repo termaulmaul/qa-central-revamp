@@ -1,4 +1,4 @@
-import type { QaseProject } from '../../types/qase';
+import type { QaseProject } from '@/types/qase';
 import { toQaseCase, toQaseSuite } from './adapters';
 import { QaseProjectsAPI } from './projects';
 import { QaseSuitesAPI } from './suites';
