@@ -53,7 +53,7 @@ export async function signIn(
     return { error: "Invalid username or password." };
   }
 
-  redirect(redirectTo.startsWith("/") ? redirectTo : "/");
+  redirect(redirectTo.startsWith("/") && redirectTo !== "/" ? redirectTo : "/modules");
 }
 
 export async function signOut() {

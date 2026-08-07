@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ModuleSelector } from "./module-selector";
-import { getSessionProfile } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { modules } from "@/lib/modules";
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ModulesPage() {
-  const profile = await getSessionProfile();
+  const profile = await requireAuth();
 
   return (
     <ModuleSelector
