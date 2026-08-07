@@ -52,7 +52,7 @@ export const CustomVarsEditor = ({ vars, onChange, disabled }: CustomVarsEditorP
     ))}
     <button
       type="button"
-      className="flex items-center justify-center gap-2 w-full py-2 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:border-zinc-300 dark:hover:text-zinc-100 dark:hover:border-zinc-700 transition-colors disabled:opacity-50"
+      className="pt-ghost-btn w-full"
       onClick={() => onChange([...vars, { key: '', value: '' }])}
       disabled={disabled}
     >

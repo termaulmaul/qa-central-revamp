@@ -168,16 +168,16 @@ const IconButton = ({ icon: Icon, onClick, className = '', active = false }: { i
 );
 
 const Button = ({ children, variant = 'primary', icon: Icon, className = '', onClick, disabled }: { children?: React.ReactNode, variant?: string, icon?: React.ElementType, className?: string, onClick?: () => void, disabled?: boolean }) => {
-  const base = "inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium spring-transition border";
+  const base = "inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium spring-transition border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 disabled:pointer-events-none disabled:opacity-50";
   const variants: Record<string, string> = {
-    primary: "bg-blue-600 hover:bg-blue-500 text-white border-transparent shadow-[0_1px_2px_rgba(0,0,0,0.2)]",
-    secondary: "bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border-zinc-300 dark:border-zinc-700",
-    ghost: "bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-transparent",
-    danger: "bg-rose-600 hover:bg-rose-500 text-white border-transparent shadow-[0_1px_2px_rgba(0,0,0,0.2)]",
+    primary: "bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white border-transparent shadow-[0_1px_2px_rgba(0,0,0,0.2)]",
+    secondary: "bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-[0.98] text-zinc-800 dark:text-zinc-200 border-zinc-300 dark:border-zinc-700",
+    ghost: "bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-[0.98] text-zinc-700 dark:text-zinc-300 border-transparent",
+    danger: "bg-rose-600 hover:bg-rose-500 active:scale-[0.98] text-white border-transparent shadow-[0_1px_2px_rgba(0,0,0,0.2)]",
   };
   
   return (
-    <button onClick={onClick} disabled={disabled} className={`${base} ${variants[variant]} ${className}`}>
+    <button onClick={onClick} disabled={disabled} className={`${base} ${variants[variant] ?? variants.primary} ${className}`}>
       {Icon && <Icon size={16} strokeWidth={1.5} />}
       {children}
     </button>

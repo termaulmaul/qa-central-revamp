@@ -85,16 +85,22 @@
     @apply text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-md px-3 py-2 font-mono;
   }
 
-  .pt-ghost-btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 shadow-sm active:scale-[0.98];
-  }
-  
-  .pt-primary-btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border border-transparent bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow active:scale-[0.98];
-  }
-  
+  .pt-ghost-btn,
+  .pt-primary-btn,
   .pt-danger-btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border border-transparent bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ease-out border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .pt-ghost-btn {
+    @apply bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-[0.98] shadow-sm;
+  }
+
+  .pt-primary-btn {
+    @apply border-transparent bg-blue-600 text-white hover:bg-blue-500 active:scale-[0.98] shadow-sm;
+  }
+
+  .pt-danger-btn {
+    @apply border-transparent bg-rose-600 text-white hover:bg-rose-500 active:scale-[0.98] shadow-sm;
   }
   
   .pt-icon-btn {
