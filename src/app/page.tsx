@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import { 
   Search, Command, LayoutGrid, Sparkles, Code2, 
   CheckCircle2, BarChart3, Settings, Database, 
@@ -217,6 +218,15 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, activeRoute, setActiveRoute, isD
 
       {/* Nav Links */}
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+        <Link
+          href="/modules"
+          aria-label="Back to Menu"
+          title="Back to Menu"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-md spring-transition text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+        >
+          <ArrowLeft size={16} strokeWidth={1.5} />
+          {!isCollapsed && <span className="truncate">Back to Menu</span>}
+        </Link>
         {navItems.map((item) => (
           <button
             key={item.id}

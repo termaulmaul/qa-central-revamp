@@ -31,7 +31,7 @@ export async function signIn(
 ): Promise<{ error: string | null }> {
   const identifier = String(formData.get("identifier") ?? "");
   const password = String(formData.get("password") ?? "");
-  const redirectTo = String(formData.get("redirectTo") ?? "/");
+  const redirectTo = String(formData.get("redirectTo") ?? "/modules");
 
   if (!identifier || !password) {
     return { error: "Username and password are required." };
@@ -53,7 +53,7 @@ export async function signIn(
     return { error: "Invalid username or password." };
   }
 
-  redirect(redirectTo.startsWith("/") ? redirectTo : "/");
+  redirect(redirectTo.startsWith("/") && redirectTo !== "/" ? redirectTo : "/modules");
 }
 
 export async function signOut() {

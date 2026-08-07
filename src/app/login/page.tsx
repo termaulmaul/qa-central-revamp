@@ -16,11 +16,13 @@ export default async function LoginPage({
   searchParams: Promise<{ redirectTo?: string }>;
 }) {
   const profile = await getSessionProfile();
-  if (profile) redirect("/");
+  if (profile) redirect("/modules");
 
   const { redirectTo } = await searchParams;
   const safeRedirect =
-    redirectTo && redirectTo.startsWith("/") ? redirectTo : "/";
+    redirectTo && redirectTo.startsWith("/") && redirectTo !== "/"
+      ? redirectTo
+      : "/modules";
 
   return (
     <main className="relative flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-12 dark:bg-zinc-950">
