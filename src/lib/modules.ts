@@ -16,7 +16,7 @@ export type QaModule = {
 const comingSoon = {
   status: "Coming Soon" as const,
   enabled: false,
-  route: "/",
+  route: "/?screen=home",
 };
 
 export const modules: QaModule[] = [
