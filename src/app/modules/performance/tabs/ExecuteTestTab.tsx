@@ -330,7 +330,7 @@ const ExecuteTestContent = ({ onNavigate }: { onNavigate: (id: string) => void }
       if (!snapshotResponse.ok) throw new Error(snapshot.error ?? 'Unable to load queue');
       const occupied = new Set([
         snapshot.current?.script,
-        ...snapshot.queue.map((job) => job.script),
+        ...snapshot.queue.map((job: { script?: string }) => job.script),
       ].filter((value): value is string => Boolean(value)));
       for (const regressionScript of regressionScripts) {
         if (occupied.has(regressionScript)) {
