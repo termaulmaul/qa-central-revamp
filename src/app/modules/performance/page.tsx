@@ -114,9 +114,9 @@ export default function PerformanceModulePage() {
   const noMetrics = !system || (system.memoryTotalGb == null && system.memoryUsedGb == null && system.loadAvg == null);
 
   return (
-    <main className="flex h-screen w-full bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50 overflow-hidden">
+    <main className="flex h-screen w-screen overflow-hidden bg-white font-sans text-zinc-900 selection:bg-blue-500/30 dark:bg-zinc-950 dark:text-zinc-100">
       <aside 
-        className={`hidden md:flex h-full border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex-col spring-transition ${isCollapsed ? 'w-16' : 'w-[240px]'}`}
+        className={`hidden h-full flex-col border-r border-zinc-200 bg-white spring-transition dark:border-zinc-800 dark:bg-zinc-950 md:flex ${isCollapsed ? 'w-16' : 'w-[240px]'}`}
         style={{ minWidth: isCollapsed ? '64px' : '240px' }}
       >
         {/* Workspace Header */}
@@ -203,8 +203,8 @@ export default function PerformanceModulePage() {
         </div>
       </aside>
 
-      <section className="flex min-w-0 flex-1 flex-col h-screen overflow-hidden">
-        <header className="flex min-h-12 items-center border-b border-zinc-200 bg-white/90 px-4 dark:border-zinc-800 dark:bg-zinc-950/90 sm:px-6 shrink-0">
+      <section className="relative z-10 flex h-screen min-w-0 flex-1 flex-col overflow-hidden bg-white shadow-[-10px_0_30px_rgba(0,0,0,0.05)] dark:bg-zinc-950 dark:shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
+        <header className="sticky top-0 z-10 flex min-h-12 shrink-0 items-center border-b border-zinc-200 bg-white/80 px-4 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80 sm:px-6">
           <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">
             <Link href="/modules" className="hover:text-zinc-900 dark:hover:text-zinc-100">QA Central</Link>
             <span className="px-2">/</span>
