@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import {
   Activity,
@@ -16,7 +17,6 @@ import {
   ShieldCheck,
   Smartphone,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import type { QaModule } from "@/lib/modules";
 import { triggerSignOut } from "@/lib/use-current-user";
 import { ThemeToggle } from "@/app/login/theme-toggle";
@@ -44,13 +44,10 @@ const statusStyles = {
 } as const;
 
 export function ModuleSelector({ modules, username }: { modules: QaModule[]; username: string }) {
-  const router = useRouter();
   const [language, setLanguage] = useState<"ID" | "EN">("EN");
 
-  function selectModule(module: QaModule) {
-    if (!module.enabled || (module.status !== "Available" && module.status !== "Beta")) return;
+  function rememberModule(module: QaModule) {
     window.localStorage.setItem("qa-last-module", module.id);
-    router.push(module.route);
   }
 
   return (
@@ -88,13 +85,20 @@ export function ModuleSelector({ modules, username }: { modules: QaModule[]; use
               const isAvailable = module.enabled && (module.status === "Available" || module.status === "Beta");
               const Icon = iconMap[module.icon];
               return (
-                <button
+                <Link
                   key={module.id}
-                  type="button"
-                  disabled={!isAvailable}
-                  onClick={() => selectModule(module)}
+                  href={module.route}
+                  onClick={(event) => {
+                    if (!isAvailable) {
+                      event.preventDefault();
+                      return;
+                    }
+                    rememberModule(module);
+                  }}
+                  aria-disabled={!isAvailable}
+                  tabIndex={isAvailable ? 0 : -1}
                   title={!isAvailable ? `${module.name} is ${module.status.toLowerCase()}` : `Open ${module.name}`}
-                  className="group flex min-h-44 flex-col items-center rounded-2xl border border-zinc-200/80 bg-white/85 p-4 text-center shadow-sm backdrop-blur transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:border-zinc-200 disabled:hover:shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900/75 dark:shadow-black/20 dark:focus-visible:ring-offset-zinc-950"
+                  className="group flex min-h-44 flex-col items-center rounded-2xl border border-zinc-200/80 bg-white/85 p-4 text-center shadow-sm backdrop-blur transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-70 aria-disabled:hover:translate-y-0 aria-disabled:hover:border-zinc-200 aria-disabled:hover:shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900/75 dark:shadow-black/20 dark:focus-visible:ring-offset-zinc-950"
                 >
                   <span className="mb-3 flex size-10 items-center justify-center rounded-full bg-zinc-50 text-blue-600 transition-transform group-hover:scale-105 dark:bg-zinc-800 dark:text-blue-300">
                     <Icon className="size-5" aria-hidden="true" />
@@ -106,7 +110,7 @@ export function ModuleSelector({ modules, username }: { modules: QaModule[]; use
                   <span className={`mt-3 rounded-full border px-2.5 py-1 text-xs font-medium ${statusStyles[module.status]}`}>
                     {module.status}
                   </span>
-                </button>
+                </Link>
               );
             })}
           </section>
