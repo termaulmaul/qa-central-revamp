@@ -5,10 +5,25 @@ import {
   SUPABASE_URL,
   isSupabaseConfigured,
 } from "@/lib/supabase/config";
+import { DEV_BYPASS_COOKIE, isDevBypassEnabled } from "@/lib/dev-auth";
 
 const PUBLIC_PATHS = ["/login", "/auth"];
 
 export async function updateSession(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+  const hasDevBypass =
+    isDevBypassEnabled() && request.cookies.has(DEV_BYPASS_COOKIE);
+
+  if (hasDevBypass) {
+    if (path === "/login") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/modules";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next({ request });
+  }
+
   // Never let the middleware crash the entire site. If Supabase is not
   // configured, or an unexpected error occurs, fall through to the request.
   if (!isSupabaseConfigured) {
@@ -40,7 +55,6 @@ export async function updateSession(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const path = request.nextUrl.pathname;
     const isPublic = PUBLIC_PATHS.some((p) => path.startsWith(p));
 
     if (!user && !isPublic) {

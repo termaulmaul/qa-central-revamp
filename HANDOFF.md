@@ -1,3 +1,10 @@
+Status: READY — module port from qa-central-dashboard is complete and verified.
+Canonical handoff: `.brain/runtime/session-handoff.md` (full detail: what was built, what's
+intentionally stubbed and why, validation evidence, next actions). Read that first for this
+work; the auth documentation below is separate, older reference material and still accurate.
+
+---
+
 # QA Central Revamp — Authentication Handoff
 
 This document describes the authentication system that was wired up for QA Central

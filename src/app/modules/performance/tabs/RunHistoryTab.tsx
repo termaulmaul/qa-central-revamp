@@ -393,7 +393,7 @@ export const RunHistory = () => {
       </div>
 
       <section className="panel">
-        <div className="panel-body filter-bar">
+        <div className="panel-body grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
           <label className="in-wrap">
             <span className="f-label">From</span>
             <input type="date" aria-label="Completion start date" className="f-input" value={from} onChange={(event) => updateFilters(() => setFrom(event.target.value))} />
@@ -791,15 +791,15 @@ function ImportModal({ projectId, onClose, onImported }: {
 
   return (
     <ModalShell title="IMPORT K6 REPORT" jobId={file?.name ?? ''} onClose={onClose}>
-      <form className="pt-import-form" onSubmit={(event) => void submit(event)}>
-        <label className="in-wrap is-full">
+      <form className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4" onSubmit={(event) => void submit(event)}>
+        <label className="block md:col-span-2">
           <span className="f-label">Project</span>
           <select className="f-input" aria-label="Project" required value={project} onChange={(event) => setProject(event.target.value)}>
             {!projects.some((option) => option.id === project) && <option value={project}>{project}</option>}
             {projects.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
           </select>
         </label>
-        <label className="in-wrap is-full">
+        <label className="block md:col-span-2">
           <span className="f-label">Report HTML</span>
           <input
             className="f-input"
@@ -810,11 +810,11 @@ function ImportModal({ projectId, onClose, onImported }: {
             onChange={(event) => setFile(event.target.files?.[0] ?? null)}
           />
         </label>
-        <label className="in-wrap">
+        <label className="block">
           <span className="f-label">Start Time</span>
           <input className="f-input" type="datetime-local" aria-label="Start time" required value={start} onChange={(event) => setStart(event.target.value)} />
         </label>
-        <label className="in-wrap">
+        <label className="block">
           <span className="f-label">End Time</span>
           <input className="f-input" type="datetime-local" aria-label="End time" required value={end} onChange={(event) => setEnd(event.target.value)} />
         </label>

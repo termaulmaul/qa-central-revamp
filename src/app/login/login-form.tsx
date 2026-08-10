@@ -97,6 +97,12 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
         <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
         Secured by Supabase Auth
       </p>
+
+      {process.env.NODE_ENV !== "production" ? (
+        <p className="rounded-lg border border-dashed border-amber-400/40 bg-amber-400/10 px-3 py-2 text-center text-xs text-amber-600 dark:text-amber-400">
+          Dev bypass: sign in with <code>admin</code> / <code>admin</code> for a full-access session (no Oracle/Supabase account required).
+        </p>
+      ) : null}
     </form>
   );
 }

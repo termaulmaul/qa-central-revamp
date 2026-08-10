@@ -581,13 +581,15 @@ const ExecuteTestContent = ({ onNavigate }: { onNavigate: (id: string) => void }
         {/* Custom Variables — shared editor (also used by Settings → Runtime
             Defaults): free rows of VARIABLE_NAME/value in entry order,
             removable, plus New Variable. */}
-        <CustomVarsEditor vars={customVars} onChange={setCustomVars} />
+        <div className="px-6 pb-6 pt-2">
+          <CustomVarsEditor vars={customVars} onChange={setCustomVars} />
+        </div>
       </div>
 
       <div className="panel">
         <div className="ph"><h3>Command Preview</h3></div>
         <div className="panel-body">
-          <pre className="bg-zinc-950 p-4 rounded-lg font-mono text-sm text-green-400 overflow-x-auto">&gt; {commandPreview}</pre>
+          <pre className="bg-zinc-100 dark:bg-zinc-950 p-4 rounded-lg font-mono text-sm text-green-600 dark:text-green-400 overflow-x-auto">&gt; {commandPreview}</pre>
         </div>
       </div>
 

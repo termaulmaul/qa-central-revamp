@@ -20,11 +20,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Driven by the `.dark` class, not `prefers-color-scheme`: the app's theme is
+   an explicit user choice (see lib/theme-store.ts — default light, only ever
+   toggles `.dark`). Keying this off the OS preference instead made `body` dark
+   for anyone on a dark desktop while the rest of the app rendered light. */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
