@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { DEV_BYPASS_USER_ID } from '@/lib/dev-auth';
 import { getTheme, setTheme, useTheme, type Theme } from './theme-store';
 import { useLLMState, updateLLMState } from './llm-store';
 import { useQaseState, updateQaseState } from './qase-store';
@@ -34,9 +35,28 @@ export type AppSettings = {
   };
 };
 
+// The dev-bypass session has no auth.users row and no Supabase session, so
+// user_settings is unreachable for it on two counts: the user_id FK and the
+// RLS policy (auth.uid() is null). Persist to localStorage instead, so
+// settings still survive a reload during local development.
+const DEV_SETTINGS_KEY = 'qa-dev-user-settings';
+
+function isDevBypassUser(userId: string): boolean {
+  return userId === DEV_BYPASS_USER_ID;
+}
+
 export async function loadUserSettings(
   userId: string,
 ): Promise<Partial<AppSettings> | null> {
+  if (isDevBypassUser(userId)) {
+    try {
+      const raw = localStorage.getItem(DEV_SETTINGS_KEY);
+      return raw ? (JSON.parse(raw) as Partial<AppSettings>) : null;
+    } catch {
+      return null;
+    }
+  }
+
   const supabase = createClient();
   const { data, error } = await supabase
     .from('user_settings')
@@ -55,6 +75,15 @@ export async function saveUserSettings(
   userId: string,
   settings: AppSettings,
 ): Promise<void> {
+  if (isDevBypassUser(userId)) {
+    try {
+      localStorage.setItem(DEV_SETTINGS_KEY, JSON.stringify(settings));
+    } catch {
+      // Storage unavailable (private mode / quota) — settings stay in memory.
+    }
+    return;
+  }
+
   const supabase = createClient();
   const { error } = await supabase
     .from('user_settings')

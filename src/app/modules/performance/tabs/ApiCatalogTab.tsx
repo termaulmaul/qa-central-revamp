@@ -389,7 +389,7 @@ export const ApiCatalog = () => {
       <div className="page-kicker">
         <div>
           <p className="eyebrow">Performance Test Dashboard</p>
-          <h1 className="page-title icon-title"><Network size={20} /> API Catalog</h1>
+          <h1 className="page-title">API Catalog</h1>
           <p className="page-subtitle">Endpoint reference across Web, Android, and iOS.</p>
         </div>
         <div className="action-row">
@@ -422,20 +422,20 @@ export const ApiCatalog = () => {
       {showEndpointForm && (
         <CatalogModal title="Add Endpoint" onClose={() => setShowEndpointForm(false)}>
           <div className="panel-body pt-page-stack">
-            <div className="form-grid">
-              <label className="field"><span className="f-label">Method</span>
-                <select className="f-input" value={endpointForm.method} onChange={(event) => setEndpointForm((f) => ({ ...f, method: event.target.value }))}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Method</span>
+                <select className="pt-input" value={endpointForm.method} onChange={(event) => setEndpointForm((f) => ({ ...f, method: event.target.value }))}>
                   {METHODS.map((method) => <option key={method} value={method}>{method}</option>)}
                 </select>
               </label>
-              <label className="field"><span className="f-label">Path</span>
-                <input type="text" className="f-input" value={endpointForm.path} placeholder="/service/api/v1/resource" onChange={(event) => setEndpointForm((f) => ({ ...f, path: event.target.value }))} />
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Path</span>
+                <input type="text" className="pt-input" value={endpointForm.path} placeholder="/service/api/v1/resource" onChange={(event) => setEndpointForm((f) => ({ ...f, path: event.target.value }))} />
               </label>
-              <label className="field"><span className="f-label">Service</span>
-                <input type="text" className="f-input" value={endpointForm.service} placeholder="auth" onChange={(event) => setEndpointForm((f) => ({ ...f, service: event.target.value }))} />
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Service</span>
+                <input type="text" className="pt-input" value={endpointForm.service} placeholder="auth" onChange={(event) => setEndpointForm((f) => ({ ...f, service: event.target.value }))} />
               </label>
-              <label className="field"><span className="f-label">Description (optional)</span>
-                <input type="text" className="f-input" value={endpointForm.description} onChange={(event) => setEndpointForm((f) => ({ ...f, description: event.target.value }))} />
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Description (optional)</span>
+                <input type="text" className="pt-input" value={endpointForm.description} onChange={(event) => setEndpointForm((f) => ({ ...f, description: event.target.value }))} />
               </label>
             </div>
             <div className="action-row" role="group" aria-label="Platforms">
@@ -454,7 +454,7 @@ export const ApiCatalog = () => {
                 </label>
               ))}
             </div>
-            {endpointError && <p role="alert" className="text-crit">{endpointError}</p>}
+            {endpointError && <p role="alert" className="text-red-500 text-sm mt-2">{endpointError}</p>}
             <div className="action-row">
               <button className="pt-ghost-btn" type="button" onClick={() => setShowEndpointForm(false)}>Cancel</button>
               <button
@@ -539,7 +539,7 @@ export const ApiCatalog = () => {
                               onChange={() => added ? toggleRemovedName(flow.name) : toggleBpId(flow.id)}
                             />
                             <code>{flow.name}</code>
-                            <span className={`platform-badge${added && marked ? ' text-crit' : ''}`}>
+                            <span className={`platform-badge${added && marked ? ' text-red-500' : ''}`}>
                               {added ? (marked ? 'REMOVE' : 'ADDED') : platformCode(flow.platform)}
                             </span>
                           </label>
@@ -550,7 +550,7 @@ export const ApiCatalog = () => {
                 </>
               );
             })()}
-            {pickerError && <p role="alert" className="text-crit">{pickerError}</p>}
+            {pickerError && <p role="alert" className="text-red-500 text-sm mt-2">{pickerError}</p>}
             <div className="action-row">
               <button className="pt-ghost-btn" type="button" onClick={() => setShowBpPicker(false)}>Cancel</button>
               <button

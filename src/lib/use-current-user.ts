@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 
 export type CurrentUser = {
   id: string;
@@ -16,36 +15,17 @@ export function useCurrentUser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
     let active = true;
 
     async function load() {
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser();
-
-      if (!authUser) {
-        if (active) {
-          setUser(null);
-          setLoading(false);
-        }
-        return;
-      }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("username, display_name, role")
-        .eq("id", authUser.id)
-        .single();
+      // Goes through the /api/auth/session route so the dev auth bypass
+      // (no Supabase session, cookie-only) resolves the same profile the
+      // server sees via getSessionProfile().
+      const response = await fetch("/api/auth/session", { credentials: "include" });
+      const { profile } = (await response.json()) as { profile: CurrentUser | null };
 
       if (active) {
-        setUser({
-          id: authUser.id,
-          email: authUser.email ?? null,
-          username: profile?.username ?? null,
-          displayName: profile?.display_name ?? null,
-          role: (profile?.role as CurrentUser["role"]) ?? "viewer",
-        });
+        setUser(profile);
         setLoading(false);
       }
     }
@@ -53,7 +33,7 @@ export function useCurrentUser() {
     load();
 
     async function signOut() {
-      await supabase.auth.signOut();
+      await fetch("/api/auth/signout", { method: "POST", credentials: "include" });
       window.location.href = "/login";
     }
 

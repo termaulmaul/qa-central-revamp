@@ -1,5 +1,7 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { DEV_BYPASS_COOKIE, devBypassProfile, isDevBypassEnabled } from "@/lib/dev-auth";
 
 export type UserRole = "god" | "admin" | "qa" | "developer" | "viewer";
 
@@ -15,6 +17,13 @@ export type SessionProfile = {
  * Returns the authenticated user's profile, or null if not signed in.
  */
 export async function getSessionProfile(): Promise<SessionProfile | null> {
+  if (isDevBypassEnabled()) {
+    const cookieStore = await cookies();
+    if (cookieStore.get(DEV_BYPASS_COOKIE)) {
+      return devBypassProfile();
+    }
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

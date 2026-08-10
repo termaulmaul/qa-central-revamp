@@ -115,13 +115,12 @@ function SecretField({ label, state, onChange, isSet, disabled, hint }: {
   const [show, setShow] = useState(false);
   const iconButton = { background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--ink-3)', display: 'inline-flex' } as const;
   return (
-    <label className="field">
-      <span className="f-label">{label}</span>
-      <span style={{ position: 'relative', display: 'block' }}>
+    <label className="block">
+      <span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">{label}</span>
+      <span className="relative block">
         <input
           type={show ? 'text' : 'password'}
-          className="f-input"
-          style={{ width: '100%', paddingRight: 'var(--s3)', boxSizing: 'border-box' }}
+          className="pt-input w-full pr-[4.5rem]"
           value={state.value}
           placeholder={state.clear ? 'Will be cleared on save' : (isSet ? '••••••••' : '')}
           onChange={(event) => onChange({ value: event.currentTarget.value, clear: false })}
@@ -129,18 +128,18 @@ function SecretField({ label, state, onChange, isSet, disabled, hint }: {
           autoComplete="new-password"
           spellCheck={false}
         />
-        <span style={{ position: 'absolute', right: 'var(--s-1)', top: '50%', transform: 'translateY(-50%)', display: 'inline-flex', alignItems: 'center', gap: 'var(--s-2)' }}>
-          <button type="button" style={iconButton} onClick={() => setShow((current) => !current)} aria-label={show ? `Hide ${label}` : `Show ${label}`} disabled={disabled || state.clear}>
+        <span className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          <button type="button" className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300" onClick={() => setShow((current) => !current)} aria-label={show ? `Hide ${label}` : `Show ${label}`} disabled={disabled || state.clear}>
             {show ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
           {isSet ? (
-            <button type="button" className="pt-ghost-btn" style={{ padding: '0 6px', fontSize: 'var(--fs-xs)' }} onClick={() => onChange(state.clear ? EMPTY_SECRET : { value: '', clear: true })} disabled={disabled}>
+            <button type="button" className="pt-ghost-btn !py-1 !px-2 text-xs" onClick={() => onChange(state.clear ? EMPTY_SECRET : { value: '', clear: true })} disabled={disabled}>
               {state.clear ? 'Undo' : 'Clear'}
             </button>
           ) : null}
         </span>
       </span>
-      <small className="field-hint">{state.clear ? 'Marked for removal — Save to apply, Undo to keep.' : (hint ?? (isSet ? 'Saved — leave blank to keep the current value.' : 'Not set.'))}</small>
+      <small className="block text-[10px] text-zinc-500 mt-1">{state.clear ? 'Marked for removal — Save to apply, Undo to keep.' : (hint ?? (isSet ? 'Saved — leave blank to keep the current value.' : 'Not set.'))}</small>
     </label>
   );
 }
@@ -607,7 +606,7 @@ export const Settings = () => {
       <div className="page-kicker">
         <div>
           <p className="eyebrow">Performance Test Dashboard</p>
-          <h1 className="page-title icon-title"><SettingsIcon size={20} /> Settings</h1>
+          <h1 className="page-title">Settings</h1>
           <p className="page-subtitle">Deployment-wide configuration — thresholds, script path, Grafana, execution relay, notifications, queue, authentication, Qase — plus per-project runtime defaults. Saved settings work on every machine; .env stays only as a fallback.</p>
         </div>
         <div className="action-row">
@@ -619,15 +618,15 @@ export const Settings = () => {
         <div className="ph"><span className="icon-title"><Gauge size={16} /> Verdict Thresholds</span><span className="ph-meta">GLOBAL</span></div>
         <div className="panel-body pt-page-stack">
           <p className="page-subtitle">Deployment-wide pass/fail thresholds applied to every performance run.</p>
-          <div className="form-grid">
-            <label className="field"><span className="f-label">Max Avg Latency</span><span className="input-affix"><input type="number" min="1" max="600000" className="f-input" value={settings.THRESHOLD_AVG_MS} onChange={(event) => change('THRESHOLD_AVG_MS', event.currentTarget.valueAsNumber)} disabled={loading || saving} required /><span>ms</span></span><small className="field-hint">Average latency must stay below this.</small></label>
-            <label className="field"><span className="f-label">Max Error Rate</span><span className="input-affix"><input type="number" min="0" max="100" step="0.01" className="f-input" value={settings.THRESHOLD_ERR_PCT} onChange={(event) => change('THRESHOLD_ERR_PCT', event.currentTarget.valueAsNumber)} disabled={loading || saving} required /><span>%</span></span><small className="field-hint">Failed requests must stay below this.</small></label>
-            <label className="field"><span className="f-label">Min RPS</span><span className="input-affix"><input type="number" min="0" max="1000000" className="f-input" value={settings.THRESHOLD_MIN_RPS} onChange={(event) => change('THRESHOLD_MIN_RPS', event.currentTarget.valueAsNumber)} disabled={loading || saving} required /><span>req/s</span></span><small className="field-hint">Total requests per second must meet this.</small></label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Max Avg Latency</span><span className="flex items-center gap-2"><input type="number" min="1" max="600000" className="pt-input" value={settings.THRESHOLD_AVG_MS} onChange={(event) => change('THRESHOLD_AVG_MS', event.currentTarget.valueAsNumber)} disabled={loading || saving} required /><span>ms</span></span><small className="block text-[10px] text-zinc-500 mt-1">Average latency must stay below this.</small></label>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Max Error Rate</span><span className="flex items-center gap-2"><input type="number" min="0" max="100" step="0.01" className="pt-input" value={settings.THRESHOLD_ERR_PCT} onChange={(event) => change('THRESHOLD_ERR_PCT', event.currentTarget.valueAsNumber)} disabled={loading || saving} required /><span>%</span></span><small className="block text-[10px] text-zinc-500 mt-1">Failed requests must stay below this.</small></label>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Min RPS</span><span className="flex items-center gap-2"><input type="number" min="0" max="1000000" className="pt-input" value={settings.THRESHOLD_MIN_RPS} onChange={(event) => change('THRESHOLD_MIN_RPS', event.currentTarget.valueAsNumber)} disabled={loading || saving} required /><span>req/s</span></span><small className="block text-[10px] text-zinc-500 mt-1">Total requests per second must meet this.</small></label>
           </div>
-          <code className="tc-pre mt-s0 tc-muted">PASS = avg &lt; {settings.THRESHOLD_AVG_MS}ms &amp;&amp; err &lt; {settings.THRESHOLD_ERR_PCT}% &amp;&amp; rps ≥ {settings.THRESHOLD_MIN_RPS}</code>
+          <code className="block bg-zinc-100 dark:bg-zinc-950 p-4 rounded-lg font-mono text-xs text-zinc-600 dark:text-zinc-400 overflow-x-auto mt-4">PASS = avg &lt; {settings.THRESHOLD_AVG_MS}ms &amp;&amp; err &lt; {settings.THRESHOLD_ERR_PCT}% &amp;&amp; rps ≥ {settings.THRESHOLD_MIN_RPS}</code>
           <div className="action-row">
             <button className="pt-primary-btn" type="submit" disabled={loading || saving}>{saving ? 'Saving…' : 'Save Thresholds'}</button>
-            {saved ? <span className="pill ok">SAVED</span> : null}
+            {saved ? <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs">SAVED</span> : null}
           </div>
           {error ? <p role="alert">{error}</p> : null}
         </div>
@@ -637,12 +636,12 @@ export const Settings = () => {
         <div className="ph"><span className="icon-title"><FolderGit2 size={16} /> Growin Performance Test Project Path</span><span className="ph-meta">THIS MACHINE</span></div>
         <div className="panel-body pt-page-stack">
           <p className="page-subtitle">Local path to the growin_performancetest repository — the single source for SYNC, script discovery, and catalog scans.</p>
-          <div className="form-grid">
-            <label className="field" style={{ gridColumn: '1 / -1' }}>
-              <span className="f-label">Project Path</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="block" style={{ gridColumn: '1 / -1' }}>
+              <span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Project Path</span>
               <input
                 type="text"
-                className="f-input"
+                className="pt-input"
                 value={repoPath}
                 placeholder="/absolute/path/to/growin_performancetest"
                 onChange={(event) => changePath(event.currentTarget.value)}
@@ -650,12 +649,12 @@ export const Settings = () => {
                 spellCheck={false}
                 autoComplete="off"
               />
-              <small className="field-hint">Used by SYNC, repository/script/scenario discovery, catalog scans, and Helper/config.js reads. Leave empty to auto-discover next to this project. Validated on save; remote ONPREM VM paths are unaffected.</small>
+              <small className="block text-[10px] text-zinc-500 mt-1">Used by SYNC, repository/script/scenario discovery, catalog scans, and Helper/config.js reads. Leave empty to auto-discover next to this project. Validated on save; remote ONPREM VM paths are unaffected.</small>
             </label>
           </div>
           <div className="action-row">
             <button className="pt-primary-btn" type="submit" disabled={loading || pathSaving}>{pathSaving ? 'Saving…' : 'Save Project Path'}</button>
-            {pathSaved ? <span className="pill ok">SAVED</span> : null}
+            {pathSaved ? <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs">SAVED</span> : null}
           </div>
           {pathError ? <p role="alert">{pathError}</p> : null}
         </div>
@@ -665,12 +664,12 @@ export const Settings = () => {
         <div className="ph"><span className="icon-title"><Activity size={16} /> Grafana Configuration</span><span className="ph-meta">GLOBAL</span></div>
         <div className="panel-body pt-page-stack">
           <p className="page-subtitle">Grafana connection behind the Metrics Dashboard CPU/Memory cards and the derived Health Score. Saved deployment-wide, so the dashboard works on any machine without editing .env.</p>
-          <div className="form-grid">
-            <label className="field" style={{ gridColumn: '1 / -1' }}>
-              <span className="f-label">Grafana URL</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="block" style={{ gridColumn: '1 / -1' }}>
+              <span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Grafana URL</span>
               <input
                 type="url"
-                className="f-input"
+                className="pt-input"
                 value={gf.url}
                 placeholder="https://grafana.example.com"
                 onChange={(event) => changeGf({ url: event.currentTarget.value })}
@@ -678,13 +677,13 @@ export const Settings = () => {
                 spellCheck={false}
                 autoComplete="off"
               />
-              <small className="field-hint">Must be https, without query parameters or embedded credentials.</small>
+              <small className="block text-[10px] text-zinc-500 mt-1">Must be https, without query parameters or embedded credentials.</small>
             </label>
-            <label className="field">
-              <span className="f-label">Username</span>
+            <label className="block">
+              <span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Username</span>
               <input
                 type="text"
-                className="f-input"
+                className="pt-input"
                 value={gf.user}
                 placeholder="grafana-user"
                 onChange={(event) => changeGf({ user: event.currentTarget.value })}
@@ -693,13 +692,12 @@ export const Settings = () => {
                 autoComplete="off"
               />
             </label>
-            <label className="field">
-              <span className="f-label">Password</span>
-              <span style={{ position: 'relative', display: 'block' }}>
+            <label className="block">
+              <span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Password</span>
+              <span className="relative block">
                 <input
                   type={gfShowPwd ? 'text' : 'password'}
-                  className="f-input"
-                  style={{ width: '100%', paddingRight: 'var(--s2)', boxSizing: 'border-box' }}
+                  className="pt-input w-full pr-10"
                   value={gfPassword}
                   placeholder={gf.passwordSet ? '••••••••' : 'Password'}
                   onChange={(event) => { setGfPassword(event.currentTarget.value); setGfSaved(false); }}
@@ -711,15 +709,15 @@ export const Settings = () => {
                   onClick={() => setGfShowPwd((current) => !current)}
                   aria-label={gfShowPwd ? 'Hide password' : 'Show password'}
                   disabled={gfLoading || gfSaving}
-                  style={{ position: 'absolute', right: 'var(--s-1)', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--ink-3)', display: 'inline-flex' }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
                 >
                   {gfShowPwd ? <Eye size={16} /> : <EyeOff size={16} />}
                 </button>
               </span>
-              <small className="field-hint">{gf.passwordSet ? 'A password is saved — leave blank to keep it.' : 'Required for a new configuration.'}</small>
+              <small className="block text-[10px] text-zinc-500 mt-1">{gf.passwordSet ? 'A password is saved — leave blank to keep it.' : 'Required for a new configuration.'}</small>
             </label>
-            <label className="field">
-              <span className="f-label">Verify SSL</span>
+            <label className="block">
+              <span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Verify SSL</span>
               <span className="pt-switch">
                 <input
                   type="checkbox"
@@ -731,17 +729,17 @@ export const Settings = () => {
                 <span className="pt-switch-track" aria-hidden="true" />
                 <span className="pt-switch-text">{gf.verifySsl ? 'Enabled' : 'Disabled'}</span>
               </span>
-              <small className="field-hint">Keep disabled for the corporate Grafana&apos;s internal-CA certificate.</small>
+              <small className="block text-[10px] text-zinc-500 mt-1">Keep disabled for the corporate Grafana&apos;s internal-CA certificate.</small>
             </label>
-            <label className="field">
-              <span className="f-label">Timeout</span>
-              <span className="input-affix">
+            <label className="block">
+              <span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Timeout</span>
+              <span className="flex items-center gap-2">
                 <input
                   type="number"
                   min={500}
                   max={30000}
                   step={100}
-                  className="f-input"
+                  className="pt-input"
                   value={gfTimeout}
                   placeholder="8000"
                   onChange={(event) => { setGfTimeout(event.currentTarget.value); setGfSaved(false); }}
@@ -750,10 +748,10 @@ export const Settings = () => {
                 />
                 <span>ms</span>
               </span>
-              <small className="field-hint">Per-request limit for Grafana calls (500–30000 ms).</small>
+              <small className="block text-[10px] text-zinc-500 mt-1">Per-request limit for Grafana calls (500–30000 ms).</small>
             </label>
           </div>
-          <small className="field-hint">
+          <small className="block text-[10px] text-zinc-500 mt-1">
             {gf.source === 'settings'
               ? 'Active source: saved dashboard settings — used on every machine.'
               : gf.source === 'env'
@@ -763,7 +761,7 @@ export const Settings = () => {
           </small>
           <div className="action-row">
             <button className="pt-primary-btn" type="submit" disabled={gfLoading || gfSaving}>{gfSaving ? 'Saving…' : 'Save Grafana Config'}</button>
-            {gfSaved ? <span className="pill ok">SAVED</span> : null}
+            {gfSaved ? <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs">SAVED</span> : null}
           </div>
           {gfError ? <p role="alert">{gfError}</p> : null}
         </div>
@@ -787,31 +785,31 @@ export const Settings = () => {
         <div className="ph"><span className="icon-title"><ServerCog size={16} /> Execution Relay (ONPREM)</span><span className="ph-meta">GLOBAL</span></div>
         <div className="panel-body pt-page-stack">
           <p className="page-subtitle">SSH/SCP two-hop relay to the on-prem k6 runner: dashboard → jump host → runner. Used by Execute Test, the queue worker, and the remote cron.</p>
-          <div className="form-grid">
-            <label className="field"><span className="f-label">Jump Host</span>
-              <input type="text" className="f-input" value={op.host1} placeholder="10.82.15.72" onChange={(event) => { setOp({ ...op, host1: event.currentTarget.value }); cardMark('onprem'); }} disabled={cardBusy('onprem')} spellCheck={false} autoComplete="off" />
-              <small className="field-hint">First hop (SSH ProxyCommand).</small>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Jump Host</span>
+              <input type="text" className="pt-input" value={op.host1} placeholder="10.82.15.72" onChange={(event) => { setOp({ ...op, host1: event.currentTarget.value }); cardMark('onprem'); }} disabled={cardBusy('onprem')} spellCheck={false} autoComplete="off" />
+              <small className="block text-[10px] text-zinc-500 mt-1">First hop (SSH ProxyCommand).</small>
             </label>
-            <label className="field"><span className="f-label">Runner Host</span>
-              <input type="text" className="f-input" value={op.host2} placeholder="10.184.120.48" onChange={(event) => { setOp({ ...op, host2: event.currentTarget.value }); cardMark('onprem'); }} disabled={cardBusy('onprem')} spellCheck={false} autoComplete="off" />
-              <small className="field-hint">Performance Test VM running k6.</small>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Runner Host</span>
+              <input type="text" className="pt-input" value={op.host2} placeholder="10.184.120.48" onChange={(event) => { setOp({ ...op, host2: event.currentTarget.value }); cardMark('onprem'); }} disabled={cardBusy('onprem')} spellCheck={false} autoComplete="off" />
+              <small className="block text-[10px] text-zinc-500 mt-1">Performance Test VM running k6.</small>
             </label>
-            <label className="field"><span className="f-label">SSH User</span>
-              <input type="text" className="f-input" value={op.user} placeholder="qa" onChange={(event) => { setOp({ ...op, user: event.currentTarget.value }); cardMark('onprem'); }} disabled={cardBusy('onprem')} spellCheck={false} autoComplete="off" />
-              <small className="field-hint">Used on both hops unless a runner user is set.</small>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">SSH User</span>
+              <input type="text" className="pt-input" value={op.user} placeholder="qa" onChange={(event) => { setOp({ ...op, user: event.currentTarget.value }); cardMark('onprem'); }} disabled={cardBusy('onprem')} spellCheck={false} autoComplete="off" />
+              <small className="block text-[10px] text-zinc-500 mt-1">Used on both hops unless a runner user is set.</small>
             </label>
-            <label className="field"><span className="f-label">Runner User (optional)</span>
-              <input type="text" className="f-input" value={op.user2} placeholder={op.user || 'qa'} onChange={(event) => { setOp({ ...op, user2: event.currentTarget.value }); cardMark('onprem'); }} disabled={cardBusy('onprem')} spellCheck={false} autoComplete="off" />
-              <small className="field-hint">Overrides the SSH user on the runner hop only.</small>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Runner User (optional)</span>
+              <input type="text" className="pt-input" value={op.user2} placeholder={op.user || 'qa'} onChange={(event) => { setOp({ ...op, user2: event.currentTarget.value }); cardMark('onprem'); }} disabled={cardBusy('onprem')} spellCheck={false} autoComplete="off" />
+              <small className="block text-[10px] text-zinc-500 mt-1">Overrides the SSH user on the runner hop only.</small>
             </label>
             <SecretField label="SSH Password" state={opPassword} onChange={(next) => { setOpPassword(next); cardMark('onprem'); }} isSet={ac?.onprem.passwordSet ?? false} disabled={cardBusy('onprem')} />
             <SecretField label="Test-User Password" state={opTestPassword} onChange={(next) => { setOpTestPassword(next); cardMark('onprem'); }} isSet={ac?.onprem.testPasswordSet ?? false} disabled={cardBusy('onprem')} hint="Optional — performance scripts authenticate with it." />
             <SecretField label="Test-User PIN" state={opTestPin} onChange={(next) => { setOpTestPin(next); cardMark('onprem'); }} isSet={ac?.onprem.testPinSet ?? false} disabled={cardBusy('onprem')} hint="Optional — performance scripts authenticate with it." />
           </div>
-          <small className="field-hint">{ac ? sourceText(ac.onprem.source) : ''}</small>
+          <small className="block text-[10px] text-zinc-500 mt-1">{ac ? sourceText(ac.onprem.source) : ''}</small>
           <div className="action-row">
             <button className="pt-primary-btn" type="submit" disabled={cardBusy('onprem')}>{cardSaving === 'onprem' ? 'Saving…' : 'Save Execution Relay'}</button>
-            {cardSaved === 'onprem' ? <span className="pill ok">SAVED</span> : null}
+            {cardSaved === 'onprem' ? <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs">SAVED</span> : null}
             <button className="pt-ghost-btn" type="button" disabled={cardBusy('onprem')} onClick={() => void saveCard('onprem', { host1: '', host2: '', user: '', user2: '', password: null, testPassword: null, testPin: null })}>Reset to .env / defaults</button>
           </div>
           {cardError.onprem ? <p role="alert">{cardError.onprem}</p> : null}
@@ -829,7 +827,7 @@ export const Settings = () => {
         <div className="ph"><span className="icon-title"><Bell size={16} /> Notifications</span><span className="ph-meta">GLOBAL</span></div>
         <div className="panel-body pt-page-stack">
           <p className="page-subtitle">Webhook destinations the Webhooks page can reference. URLs embed tokens, so they are stored as secrets and never shown back.</p>
-          <div className="form-grid">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {NOTIFY_REF_LIST.map((ref) => (
               <SecretField
                 key={ref}
@@ -844,7 +842,7 @@ export const Settings = () => {
           </div>
           <div className="action-row">
             <button className="pt-primary-btn" type="submit" disabled={cardBusy('notify')}>{cardSaving === 'notify' ? 'Saving…' : 'Save Notifications'}</button>
-            {cardSaved === 'notify' ? <span className="pill ok">SAVED</span> : null}
+            {cardSaved === 'notify' ? <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs">SAVED</span> : null}
             <button className="pt-ghost-btn" type="button" disabled={cardBusy('notify')} onClick={() => void saveCard('notify', Object.fromEntries(NOTIFY_REF_LIST.map((ref) => [ref, null])))}>Reset to .env / defaults</button>
           </div>
           {cardError.notify ? <p role="alert">{cardError.notify}</p> : null}
@@ -862,35 +860,35 @@ export const Settings = () => {
         <div className="ph"><span className="icon-title"><Timer size={16} /> Queue &amp; Scheduler</span><span className="ph-meta">GLOBAL</span></div>
         <div className="panel-body pt-page-stack">
           <p className="page-subtitle">Queue worker and cron scheduler tuning. Changes apply from the next cycle — no restart. Blank fields fall back to .env, then application defaults.</p>
-          <div className="form-grid">
-            <label className="field"><span className="f-label">Queue Poll</span>
-              <span className="input-affix"><input type="number" min={250} max={60000} className="f-input" value={qc.queuePollMs} placeholder={String(ac?.queue.effective.queuePollMs ?? 1000)} onChange={(event) => { setQc({ ...qc, queuePollMs: event.currentTarget.value }); cardMark('queue'); }} disabled={cardBusy('queue')} /><span>ms</span></span>
-              <small className="field-hint">How often the worker looks for queued jobs (250–60000 ms).</small>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Queue Poll</span>
+              <span className="flex items-center gap-2"><input type="number" min={250} max={60000} className="pt-input" value={qc.queuePollMs} placeholder={String(ac?.queue.effective.queuePollMs ?? 1000)} onChange={(event) => { setQc({ ...qc, queuePollMs: event.currentTarget.value }); cardMark('queue'); }} disabled={cardBusy('queue')} /><span>ms</span></span>
+              <small className="block text-[10px] text-zinc-500 mt-1">How often the worker looks for queued jobs (250–60000 ms).</small>
             </label>
-            <label className="field"><span className="f-label">Job Lease</span>
-              <span className="input-affix"><input type="number" min={15} max={300} className="f-input" value={qc.queueLeaseSeconds} placeholder={String(ac?.queue.effective.queueLeaseSeconds ?? 30)} onChange={(event) => { setQc({ ...qc, queueLeaseSeconds: event.currentTarget.value }); cardMark('queue'); }} disabled={cardBusy('queue')} /><span>s</span></span>
-              <small className="field-hint">Claim lease per job; heartbeat renews at a third of this (15–300 s).</small>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Job Lease</span>
+              <span className="flex items-center gap-2"><input type="number" min={15} max={300} className="pt-input" value={qc.queueLeaseSeconds} placeholder={String(ac?.queue.effective.queueLeaseSeconds ?? 30)} onChange={(event) => { setQc({ ...qc, queueLeaseSeconds: event.currentTarget.value }); cardMark('queue'); }} disabled={cardBusy('queue')} /><span>s</span></span>
+              <small className="block text-[10px] text-zinc-500 mt-1">Claim lease per job; heartbeat renews at a third of this (15–300 s).</small>
             </label>
-            <label className="field"><span className="f-label">Cron Scheduler</span>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Cron Scheduler</span>
               <span className="pt-switch">
                 <input type="checkbox" role="switch" checked={qcCron} onChange={(event) => { setQcCron(event.currentTarget.checked); cardMark('queue'); }} disabled={cardBusy('queue')} />
                 <span className="pt-switch-track" aria-hidden="true" />
                 <span className="pt-switch-text">{qcCron ? 'Enabled' : 'Disabled'}</span>
               </span>
-              <small className="field-hint">Dispatches due cron schedules; takes effect on the next tick.</small>
+              <small className="block text-[10px] text-zinc-500 mt-1">Dispatches due cron schedules; takes effect on the next tick.</small>
             </label>
-            <label className="field"><span className="f-label">Cron Poll</span>
-              <span className="input-affix"><input type="number" min={1000} max={300000} className="f-input" value={qc.cronPollMs} placeholder={String(ac?.queue.effective.cronPollMs ?? 60000)} onChange={(event) => { setQc({ ...qc, cronPollMs: event.currentTarget.value }); cardMark('queue'); }} disabled={cardBusy('queue')} /><span>ms</span></span>
-              <small className="field-hint">Scheduler tick interval (1000–300000 ms).</small>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Cron Poll</span>
+              <span className="flex items-center gap-2"><input type="number" min={1000} max={300000} className="pt-input" value={qc.cronPollMs} placeholder={String(ac?.queue.effective.cronPollMs ?? 60000)} onChange={(event) => { setQc({ ...qc, cronPollMs: event.currentTarget.value }); cardMark('queue'); }} disabled={cardBusy('queue')} /><span>ms</span></span>
+              <small className="block text-[10px] text-zinc-500 mt-1">Scheduler tick interval (1000–300000 ms).</small>
             </label>
-            <label className="field"><span className="f-label">Cron Batch Size</span>
-              <input type="number" min={1} max={100} className="f-input" value={qc.cronBatchSize} placeholder={String(ac?.queue.effective.cronBatchSize ?? 25)} onChange={(event) => { setQc({ ...qc, cronBatchSize: event.currentTarget.value }); cardMark('queue'); }} disabled={cardBusy('queue')} />
-              <small className="field-hint">Max schedules dispatched per tick (1–100).</small>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Cron Batch Size</span>
+              <input type="number" min={1} max={100} className="pt-input" value={qc.cronBatchSize} placeholder={String(ac?.queue.effective.cronBatchSize ?? 25)} onChange={(event) => { setQc({ ...qc, cronBatchSize: event.currentTarget.value }); cardMark('queue'); }} disabled={cardBusy('queue')} />
+              <small className="block text-[10px] text-zinc-500 mt-1">Max schedules dispatched per tick (1–100).</small>
             </label>
           </div>
           <div className="action-row">
             <button className="pt-primary-btn" type="submit" disabled={cardBusy('queue')}>{cardSaving === 'queue' ? 'Saving…' : 'Save Queue & Scheduler'}</button>
-            {cardSaved === 'queue' ? <span className="pill ok">SAVED</span> : null}
+            {cardSaved === 'queue' ? <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs">SAVED</span> : null}
             <button className="pt-ghost-btn" type="button" disabled={cardBusy('queue')} onClick={() => void saveCard('queue', {})}>Reset to .env / defaults</button>
           </div>
           {cardError.queue ? <p role="alert">{cardError.queue}</p> : null}
@@ -908,27 +906,27 @@ export const Settings = () => {
         <div className="ph"><span className="icon-title"><Shield size={16} /> Authentication &amp; Sessions</span><span className="ph-meta">GLOBAL</span></div>
         <div className="panel-body pt-page-stack">
           <p className="page-subtitle">Session lifetime, login rate limiting, and the password-expiry warning. Blank fields fall back to .env, then application defaults. Existing sessions keep their original expiry.</p>
-          <div className="form-grid">
-            <label className="field"><span className="f-label">Session Lifetime</span>
-              <span className="input-affix"><input type="number" min={1} max={168} className="f-input" value={au.sessionHours} placeholder={String(ac?.auth.effective.sessionHours ?? 12)} onChange={(event) => { setAu({ ...au, sessionHours: event.currentTarget.value }); cardMark('auth'); }} disabled={cardBusy('auth')} /><span>h</span></span>
-              <small className="field-hint">Login session duration (1–168 hours).</small>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Session Lifetime</span>
+              <span className="flex items-center gap-2"><input type="number" min={1} max={168} className="pt-input" value={au.sessionHours} placeholder={String(ac?.auth.effective.sessionHours ?? 12)} onChange={(event) => { setAu({ ...au, sessionHours: event.currentTarget.value }); cardMark('auth'); }} disabled={cardBusy('auth')} /><span>h</span></span>
+              <small className="block text-[10px] text-zinc-500 mt-1">Login session duration (1–168 hours).</small>
             </label>
-            <label className="field"><span className="f-label">Rate-Limit Window</span>
-              <span className="input-affix"><input type="number" min={1} max={3600} className="f-input" value={au.rateLimitWindowSeconds} placeholder={String(ac?.auth.effective.rateLimitWindowSeconds ?? 60)} onChange={(event) => { setAu({ ...au, rateLimitWindowSeconds: event.currentTarget.value }); cardMark('auth'); }} disabled={cardBusy('auth')} /><span>s</span></span>
-              <small className="field-hint">Window for counting login attempts (1–3600 s).</small>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Rate-Limit Window</span>
+              <span className="flex items-center gap-2"><input type="number" min={1} max={3600} className="pt-input" value={au.rateLimitWindowSeconds} placeholder={String(ac?.auth.effective.rateLimitWindowSeconds ?? 60)} onChange={(event) => { setAu({ ...au, rateLimitWindowSeconds: event.currentTarget.value }); cardMark('auth'); }} disabled={cardBusy('auth')} /><span>s</span></span>
+              <small className="block text-[10px] text-zinc-500 mt-1">Window for counting login attempts (1–3600 s).</small>
             </label>
-            <label className="field"><span className="f-label">Max Login Attempts</span>
-              <input type="number" min={1} max={1000} className="f-input" value={au.rateLimitMax} placeholder={String(ac?.auth.effective.rateLimitMax ?? 10)} onChange={(event) => { setAu({ ...au, rateLimitMax: event.currentTarget.value }); cardMark('auth'); }} disabled={cardBusy('auth')} />
-              <small className="field-hint">Attempts allowed per window per address (1–1000).</small>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Max Login Attempts</span>
+              <input type="number" min={1} max={1000} className="pt-input" value={au.rateLimitMax} placeholder={String(ac?.auth.effective.rateLimitMax ?? 10)} onChange={(event) => { setAu({ ...au, rateLimitMax: event.currentTarget.value }); cardMark('auth'); }} disabled={cardBusy('auth')} />
+              <small className="block text-[10px] text-zinc-500 mt-1">Attempts allowed per window per address (1–1000).</small>
             </label>
-            <label className="field"><span className="f-label">Expiry Warning</span>
-              <span className="input-affix"><input type="number" min={0} max={365} className="f-input" value={au.passwordExpiryWarningDays} placeholder={String(ac?.auth.effective.passwordExpiryWarningDays ?? 30)} onChange={(event) => { setAu({ ...au, passwordExpiryWarningDays: event.currentTarget.value }); cardMark('auth'); }} disabled={cardBusy('auth')} /><span>days</span></span>
-              <small className="field-hint">Days before password expiry to start warning (0–365).</small>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Expiry Warning</span>
+              <span className="flex items-center gap-2"><input type="number" min={0} max={365} className="pt-input" value={au.passwordExpiryWarningDays} placeholder={String(ac?.auth.effective.passwordExpiryWarningDays ?? 30)} onChange={(event) => { setAu({ ...au, passwordExpiryWarningDays: event.currentTarget.value }); cardMark('auth'); }} disabled={cardBusy('auth')} /><span>days</span></span>
+              <small className="block text-[10px] text-zinc-500 mt-1">Days before password expiry to start warning (0–365).</small>
             </label>
           </div>
           <div className="action-row">
             <button className="pt-primary-btn" type="submit" disabled={cardBusy('auth')}>{cardSaving === 'auth' ? 'Saving…' : 'Save Authentication'}</button>
-            {cardSaved === 'auth' ? <span className="pill ok">SAVED</span> : null}
+            {cardSaved === 'auth' ? <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs">SAVED</span> : null}
             <button className="pt-ghost-btn" type="button" disabled={cardBusy('auth')} onClick={() => void saveCard('auth', {})}>Reset to .env / defaults</button>
           </div>
           {cardError.auth ? <p role="alert">{cardError.auth}</p> : null}
@@ -946,17 +944,17 @@ export const Settings = () => {
         <div className="ph"><span className="icon-title"><Link2 size={16} /> Qase Integration</span><span className="ph-meta">GLOBAL</span></div>
         <div className="panel-body pt-page-stack">
           <p className="page-subtitle">Qase API connection used by the test-case tools and the Qase proxy.</p>
-          <div className="form-grid">
-            <label className="field"><span className="f-label">Base URL</span>
-              <input type="url" className="f-input" value={qsBaseUrl} placeholder={ac?.qase.baseUrl ?? 'https://api.qase.io/v1'} onChange={(event) => { setQsBaseUrl(event.currentTarget.value); cardMark('qase'); }} disabled={cardBusy('qase')} spellCheck={false} autoComplete="off" />
-              <small className="field-hint">Must be https. Leave blank for the default.</small>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Base URL</span>
+              <input type="url" className="pt-input" value={qsBaseUrl} placeholder={ac?.qase.baseUrl ?? 'https://api.qase.io/v1'} onChange={(event) => { setQsBaseUrl(event.currentTarget.value); cardMark('qase'); }} disabled={cardBusy('qase')} spellCheck={false} autoComplete="off" />
+              <small className="block text-[10px] text-zinc-500 mt-1">Must be https. Leave blank for the default.</small>
             </label>
             <SecretField label="API Token" state={qsToken} onChange={(next) => { setQsToken(next); cardMark('qase'); }} isSet={ac?.qase.apiTokenSet ?? false} disabled={cardBusy('qase')} hint={ac?.qase.apiTokenSet ? 'A token is available — leave blank to keep it.' : 'Requests without a token fall back to the browser-supplied token header.'} />
           </div>
-          <small className="field-hint">{ac ? sourceText(ac.qase.source) : ''}</small>
+          <small className="block text-[10px] text-zinc-500 mt-1">{ac ? sourceText(ac.qase.source) : ''}</small>
           <div className="action-row">
             <button className="pt-primary-btn" type="submit" disabled={cardBusy('qase')}>{cardSaving === 'qase' ? 'Saving…' : 'Save Qase Integration'}</button>
-            {cardSaved === 'qase' ? <span className="pill ok">SAVED</span> : null}
+            {cardSaved === 'qase' ? <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs">SAVED</span> : null}
             <button className="pt-ghost-btn" type="button" disabled={cardBusy('qase')} onClick={() => void saveCard('qase', { baseUrl: '', apiToken: null })}>Reset to .env / defaults</button>
           </div>
           {cardError.qase ? <p role="alert">{cardError.qase}</p> : null}
@@ -966,36 +964,36 @@ export const Settings = () => {
       <form className="panel" onSubmit={saveRuntimeDefaults} aria-busy={rdLoading || rdSaving}>
         <div className="ph"><span className="icon-title"><SlidersHorizontal size={16} /> Runtime Defaults</span><span className="ph-meta">PER PROJECT</span></div>
         <div className="panel-body pt-page-stack">
-          <div className="form-grid">
-            <label className="field"><span className="f-label">Project</span>
-              <select className="f-input" value={rdProject} onChange={(event) => setRdProject(event.target.value)} disabled={rdLoading || rdSaving}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Project</span>
+              <select className="pt-input" value={rdProject} onChange={(event) => setRdProject(event.target.value)} disabled={rdLoading || rdSaving}>
                 {!projects.length && <option value="">No projects available</option>}
                 {projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}
               </select>
-              <small className="field-hint">Execute Test loads these defaults automatically when this project is selected. Empty fields fall back to the application defaults (shown as placeholders). Changing values in Execute Test never overwrites what is saved here.</small>
+              <small className="block text-[10px] text-zinc-500 mt-1">Execute Test loads these defaults automatically when this project is selected. Empty fields fall back to the application defaults (shown as placeholders). Changing values in Execute Test never overwrites what is saved here.</small>
             </label>
           </div>
 
-          <section className="rd-section">
-            <h3 className="rd-section-title">Environment</h3>
-            <p className="rd-section-desc">Execution environment and account dataset — options come from Helper/config.js, like Execute Test.</p>
-            <div className="rd-grid-3">
-              <label className="field"><span className="f-label">ENV_MODE</span>
-                <select className="f-input" value={rdValues.ENV_MODE ?? ''} onChange={(event) => changeRd('ENV_MODE', event.target.value)} disabled={rdDisabled}>
+          <section className="mb-6">
+            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Environment</h3>
+            <p className="text-xs text-zinc-500 mb-4">Execution environment and account dataset — options come from Helper/config.js, like Execute Test.</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">ENV_MODE</span>
+                <select className="pt-input" value={rdValues.ENV_MODE ?? ''} onChange={(event) => changeRd('ENV_MODE', event.target.value)} disabled={rdDisabled}>
                   <option value="">Application default (INT)</option>
                   {rdEnvOptions.map((value) => <option key={value} value={value}>{value}</option>)}
                 </select>
               </label>
-              <label className="field"><span className="f-label">ACC</span>
-                <select className="f-input" value={rdValues.ACC ?? ''} onChange={(event) => changeRd('ACC', event.target.value)} disabled={rdDisabled}>
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">ACC</span>
+                <select className="pt-input" value={rdValues.ACC ?? ''} onChange={(event) => changeRd('ACC', event.target.value)} disabled={rdDisabled}>
                   <option value="">Application default (Regular)</option>
                   {/* Fixed user-facing labels; the stored values (REG/DT) match Execute Test. */}
                   <option value="REG">Regular</option>
                   <option value="DT">Daytrade</option>
                 </select>
               </label>
-              <label className="field"><span className="f-label">EXEC_TYPE</span>
-                <select className="f-input" value={rdValues.EXEC_TYPE ?? ''} onChange={(event) => changeRd('EXEC_TYPE', event.target.value)} disabled={rdDisabled}>
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">EXEC_TYPE</span>
+                <select className="pt-input" value={rdValues.EXEC_TYPE ?? ''} onChange={(event) => changeRd('EXEC_TYPE', event.target.value)} disabled={rdDisabled}>
                   <option value="">Application default (MANUAL)</option>
                   {EXEC_TYPES.map((value) => <option key={value} value={value}>{value}</option>)}
                 </select>
@@ -1064,8 +1062,8 @@ export const Settings = () => {
             <CustomVarsEditor vars={rdVars} onChange={(next) => { setRdVars(next); setRdSaved(false); }} disabled={rdDisabled} />
           </section>
 
-          {rdError ? <p role="alert" className="text-crit">{rdError}</p> : null}
-          <div className="rd-actions">
+          {rdError ? <p role="alert" className="text-red-500 text-sm mt-2">{rdError}</p> : null}
+          <div className="flex items-center justify-end gap-4 mt-6">
             {rdSaved ? <span className="pill ok">SAVED</span> : null}
             <button className="pt-primary-btn" type="submit" disabled={rdLoading || rdSaving || !rdProject}>{rdSaving ? 'Saving…' : 'Save Runtime Defaults'}</button>
           </div>

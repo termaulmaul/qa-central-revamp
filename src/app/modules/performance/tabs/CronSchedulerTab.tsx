@@ -392,7 +392,7 @@ export const CronScheduler = () => {
       <div className="page-kicker">
         <div>
           <p className="eyebrow">Performance Test Dashboard</p>
-          <h1 className="page-title icon-title"><Clock size={20} /> Scheduler</h1>
+          <h1 className="page-title">Scheduler</h1>
           <p className="page-subtitle">Live crontab on 10.184.120.48 — the single source of truth. Nothing is stored locally.</p>
         </div>
         <div className="action-row">
@@ -405,7 +405,7 @@ export const CronScheduler = () => {
         <div className="ph"><span>SCHEDULES</span><span className="ph-meta">{entries.length} on 10.184.120.48</span></div>
         <div className="panel-body pt-page-stack">
           {loading ? <p>Reading crontab from 10.184.120.48…</p> : null}
-          {error ? <p role="alert" className="text-crit">{error}</p> : null}
+          {error ? <p role="alert" className="text-red-500 text-sm mt-2">{error}</p> : null}
           {status ? <p role="status">{status}</p> : null}
           {!loading && !error && !entries.length ? <p>No PT schedules configured on the runner.</p> : null}
           {!loading && !error && entries.length > 0 && (
@@ -438,7 +438,7 @@ export const CronScheduler = () => {
                       <td><code>{entry.schedule}</code></td>
                       <td>{entry.enabled ? fmt(nextRun(entry.schedule)) : '—'}</td>
                       <td>{fmt(entry.lastRun)}</td>
-                      <td><span className={`pill ${entry.enabled ? 'ok' : 'warn'}`}>{entry.enabled ? 'ENABLED' : 'DISABLED'}</span></td>
+                      <td><span className={`px-2 py-1 rounded text-xs font-medium ${entry.enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>{entry.enabled ? 'ENABLED' : 'DISABLED'}</span></td>
                       <td>
                         <span className="action-row">
                           <button className="pt-ghost-btn icon-btn" type="button" title="Edit" onClick={() => openEdit(entry)} disabled={saving}><Pencil size={14} /></button>
@@ -458,83 +458,83 @@ export const CronScheduler = () => {
       {formOpen && (
         <CronModal title={editing ? `Edit Schedule — ${parseCommand(editing.command).name}` : 'New Schedule'} onClose={() => { setCreating(false); setEditing(null); }}>
           <form className="panel-body pt-page-stack" onSubmit={submitForm}>
-            <div className="form-grid">
-              <label className="field"><span className="f-label">Scheduler Name</span>
-                <input type="text" className="f-input" required value={form.name} placeholder="Nightly smoke" onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} disabled={saving} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Scheduler Name</span>
+                <input type="text" className="pt-input" required value={form.name} placeholder="Nightly smoke" onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} disabled={saving} />
               </label>
-              <label className="field"><span className="f-label">Cron Expression (VM time)</span>
-                <input type="text" className="f-input" required value={form.cron} placeholder="0 0 * * *" onChange={(e) => setForm((f) => ({ ...f, cron: e.target.value }))} disabled={saving} spellCheck={false} />
-                <small className="field-hint">Next run: {fmt(nextRun(form.cron))}</small>
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Cron Expression (VM time)</span>
+                <input type="text" className="pt-input" required value={form.cron} placeholder="0 0 * * *" onChange={(e) => setForm((f) => ({ ...f, cron: e.target.value }))} disabled={saving} spellCheck={false} />
+                <small className="block text-[10px] text-zinc-500 mt-1">Next run: {fmt(nextRun(form.cron))}</small>
               </label>
-              <label className="field"><span className="f-label">Project</span>
-                <input type="text" className="f-input" value={form.project} onChange={(e) => setForm((f) => ({ ...f, project: e.target.value }))} disabled={saving} />
-                <small className="field-hint">Scopes the Repository/Script options below (local metadata only).</small>
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Project</span>
+                <input type="text" className="pt-input" value={form.project} onChange={(e) => setForm((f) => ({ ...f, project: e.target.value }))} disabled={saving} />
+                <small className="block text-[10px] text-zinc-500 mt-1">Scopes the Repository/Script options below (local metadata only).</small>
               </label>
-              <label className="field"><span className="f-label">Repository</span>
-                <select className="f-input" value={form.repository} onChange={(e) => setForm((f) => ({ ...f, repository: e.target.value, script: '', scenarios: [] }))} disabled={saving}>
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Repository</span>
+                <select className="pt-input" value={form.repository} onChange={(e) => setForm((f) => ({ ...f, repository: e.target.value, script: '', scenarios: [] }))} disabled={saving}>
                   <option value="">Select…</option>
                   {repositoryOptions.map((name) => <option key={name} value={name}>{name}</option>)}
                   {form.repository && !repositoryOptions.includes(form.repository) && <option value={form.repository}>{form.repository}</option>}
                 </select>
               </label>
-              <label className="field"><span className="f-label">Script</span>
-                <select className="f-input" value={form.script} onChange={(e) => setForm((f) => ({ ...f, script: e.target.value }))} disabled={saving}>
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Script</span>
+                <select className="pt-input" value={form.script} onChange={(e) => setForm((f) => ({ ...f, script: e.target.value }))} disabled={saving}>
                   <option value="">Select…</option>
                   {scriptOptions.map((s) => <option key={s} value={s}>{s}</option>)}
                   {form.script && !scriptOptions.includes(form.script) && <option value={form.script}>{form.script}</option>}
                 </select>
               </label>
-              <label className="field"><span className="f-label">Target Platform</span>
-                <select className="f-input" value={form.platform} onChange={(e) => setForm((f) => ({ ...f, platform: e.target.value, scenarios: [] }))} disabled={saving}>
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Target Platform</span>
+                <select className="pt-input" value={form.platform} onChange={(e) => setForm((f) => ({ ...f, platform: e.target.value, scenarios: [] }))} disabled={saving}>
                   <option value="">{platformOptions[0] ?? 'Web'} (default)</option>
                   {platformOptions.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
               </label>
-              <label className="field"><span className="f-label">Scenario ({effectivePlatform} BP scripts)</span>
-                <select className="f-input" multiple size={Math.min(5, Math.max(3, scenarioOptions.length))} value={form.scenarios}
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Scenario ({effectivePlatform} BP scripts)</span>
+                <select className="pt-input" multiple size={Math.min(5, Math.max(3, scenarioOptions.length))} value={form.scenarios}
                   onChange={(e) => setForm((f) => ({ ...f, scenarios: [...e.currentTarget.selectedOptions].map((o) => o.value) }))} disabled={saving || !scenarioOptions.length}>
                   {scenarioOptions.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
-                <small className="field-hint">None selected = ALL.</small>
+                <small className="block text-[10px] text-zinc-500 mt-1">None selected = ALL.</small>
               </label>
-              <label className="field"><span className="f-label">ENV</span>
-                <select className="f-input" value={form.env} onChange={(e) => setForm((f) => ({ ...f, env: e.target.value }))} disabled={saving}>
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">ENV</span>
+                <select className="pt-input" value={form.env} onChange={(e) => setForm((f) => ({ ...f, env: e.target.value }))} disabled={saving}>
                   {envOptions.map((m) => <option key={m} value={m}>{m}</option>)}
                   {form.env && !envOptions.includes(form.env) && <option value={form.env}>{form.env}</option>}
                 </select>
               </label>
-              <label className="field"><span className="f-label">ACC</span>
-                <select className="f-input" value={form.acc} onChange={(e) => setForm((f) => ({ ...f, acc: e.target.value }))} disabled={saving}>
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">ACC</span>
+                <select className="pt-input" value={form.acc} onChange={(e) => setForm((f) => ({ ...f, acc: e.target.value }))} disabled={saving}>
                   <option value="">Default (ENV fallback)</option>
                   <option value="REG">Regular</option>
                   <option value="DT">Daytrade</option>
                 </select>
               </label>
-              <label className="field"><span className="f-label">EXEC_TYPE</span>
-                <select className="f-input" value={form.execType} onChange={(e) => setForm((f) => ({ ...f, execType: e.target.value }))} disabled={saving}>
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">EXEC_TYPE</span>
+                <select className="pt-input" value={form.execType} onChange={(e) => setForm((f) => ({ ...f, execType: e.target.value }))} disabled={saving}>
                   {EXEC_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
               </label>
-              <label className="field"><span className="f-label">VUS</span>
-                <input type="number" min={1} max={5000} className="f-input" value={form.vus} onChange={(e) => setForm((f) => ({ ...f, vus: Number(e.target.value) }))} disabled={saving} />
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">VUS</span>
+                <input type="number" min={1} max={5000} className="pt-input" value={form.vus} onChange={(e) => setForm((f) => ({ ...f, vus: Number(e.target.value) }))} disabled={saving} />
               </label>
-              <label className="field"><span className="f-label">DURATION</span>
-                <input type="text" className="f-input" pattern="[1-9][0-9]{0,5}[smh]" placeholder="5m" value={form.duration} onChange={(e) => setForm((f) => ({ ...f, duration: e.target.value }))} disabled={saving} spellCheck={false} />
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">DURATION</span>
+                <input type="text" className="pt-input" pattern="[1-9][0-9]{0,5}[smh]" placeholder="5m" value={form.duration} onChange={(e) => setForm((f) => ({ ...f, duration: e.target.value }))} disabled={saving} spellCheck={false} />
               </label>
-              <label className="field"><span className="f-label">NUMSTART</span>
-                <input type="number" min={0} max={form.vus} className="f-input" value={form.numStart} onChange={(e) => setForm((f) => ({ ...f, numStart: Number(e.target.value) }))} disabled={saving} />
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">NUMSTART</span>
+                <input type="number" min={0} max={form.vus} className="pt-input" value={form.numStart} onChange={(e) => setForm((f) => ({ ...f, numStart: Number(e.target.value) }))} disabled={saving} />
               </label>
-              <label className="field"><span className="f-label">Status</span>
-                <select className="f-input" value={form.enabled ? 'enabled' : 'disabled'} onChange={(e) => setForm((f) => ({ ...f, enabled: e.target.value === 'enabled' }))} disabled={saving}>
+              <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Status</span>
+                <select className="pt-input" value={form.enabled ? 'enabled' : 'disabled'} onChange={(e) => setForm((f) => ({ ...f, enabled: e.target.value === 'enabled' }))} disabled={saving}>
                   <option value="enabled">Enabled</option>
                   <option value="disabled">Disabled</option>
                 </select>
               </label>
             </div>
-            <div className="field"><span className="f-label">Custom Variables</span>
+            <div className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Custom Variables</span>
               <CustomVarsEditor vars={form.customVars} onChange={(next) => setForm((f) => ({ ...f, customVars: next }))} disabled={saving} />
             </div>
-            {formError && <p role="alert" className="text-crit">{formError}</p>}
+            {formError && <p role="alert" className="text-red-500 text-sm mt-2">{formError}</p>}
             <div className="action-row">
               <button className="pt-ghost-btn" type="button" onClick={() => { setCreating(false); setEditing(null); }} disabled={saving}>Cancel</button>
               <button className="pt-primary-btn" type="submit" disabled={saving}>{saving ? 'Saving…' : editing ? 'Save to 10.184.120.48' : 'Create on 10.184.120.48'}</button>

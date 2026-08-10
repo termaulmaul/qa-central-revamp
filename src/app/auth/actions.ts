@@ -1,7 +1,9 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { DEV_BYPASS_COOKIE, matchesDevCredentials } from "@/lib/dev-auth";
 
 /**
  * Resolves a login identifier to the auth email.
@@ -37,6 +39,16 @@ export async function signIn(
     return { error: "Username and password are required." };
   }
 
+  if (matchesDevCredentials(identifier, password)) {
+    const cookieStore = await cookies();
+    cookieStore.set(DEV_BYPASS_COOKIE, "1", {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+    });
+    redirect(redirectTo.startsWith("/") && redirectTo !== "/" ? redirectTo : "/modules");
+  }
+
   const supabase = await createClient();
 
   const email = await resolveEmail(supabase, identifier);
@@ -57,6 +69,8 @@ export async function signIn(
 }
 
 export async function signOut() {
+  const cookieStore = await cookies();
+  cookieStore.delete(DEV_BYPASS_COOKIE);
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/login");

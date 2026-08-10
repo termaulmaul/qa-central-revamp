@@ -171,11 +171,11 @@ export const Projects = () => {
       </div>
 
       <section className="panel">
-        <div className="ph">Project Context</div>
+        <div className="ph"><h3>Project Context</h3></div>
         <div className="panel-body">
-          <label className="field">
-            <span className="f-label">Active project</span>
-            <select className="f-input" value={selectedId ?? ''} onChange={(event) => selectProject(event.target.value || null)}>
+          <label className="block">
+            <span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Active project</span>
+            <select className="pt-input w-full md:w-1/2 lg:w-1/3" value={selectedId ?? ''} onChange={(event) => selectProject(event.target.value || null)}>
               {activeProjects.length === 0 && <option value="">No active projects</option>}
               {activeProjects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}
             </select>
@@ -184,24 +184,24 @@ export const Projects = () => {
       </section>
 
       <form className="panel" onSubmit={submitProject}>
-        <div className="ph">{editingId ? 'Edit Project' : 'Add Project'}</div>
+        <div className="ph"><h3>{editingId ? 'Edit Project' : 'Add Project'}</h3></div>
         <div className="panel-body pt-page-stack">
-          <div className="form-grid">
-            <label className="field"><span className="f-label">Project name</span><input required type="text" className="f-input" value={form.name} onChange={(event) => updateForm('name', event.target.value)} placeholder="Project name" /></label>
-            <label className="field"><span className="f-label">Version</span><input required type="text" className="f-input" value={form.version} onChange={(event) => updateForm('version', event.target.value)} placeholder="1.0.0" pattern="\d+\.\d+\.\d+" /></label>
-            <label className="field"><span className="f-label">Owner</span><input type="text" className="f-input" value={form.owner} onChange={(event) => updateForm('owner', event.target.value)} placeholder="Owner" /></label>
-            <label className="field"><span className="f-label">Team</span><input type="text" className="f-input" value={form.team} onChange={(event) => updateForm('team', event.target.value)} placeholder="Team" /></label>
-            <label className="field"><span className="f-label">Services</span><input type="text" className="f-input" value={form.services} onChange={(event) => updateForm('services', event.target.value)} placeholder="Services comma-separated" /></label>
-            <label className="field"><span className="f-label">Description</span><input type="text" className="f-input" value={form.description} onChange={(event) => updateForm('description', event.target.value)} placeholder="Description" /></label>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Project name</span><input required type="text" className="pt-input" value={form.name} onChange={(event) => updateForm('name', event.target.value)} placeholder="Project name" /></label>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Version</span><input required type="text" className="pt-input" value={form.version} onChange={(event) => updateForm('version', event.target.value)} placeholder="1.0.0" pattern="\d+\.\d+\.\d+" /></label>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Owner</span><input type="text" className="pt-input" value={form.owner} onChange={(event) => updateForm('owner', event.target.value)} placeholder="Owner" /></label>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Team</span><input type="text" className="pt-input" value={form.team} onChange={(event) => updateForm('team', event.target.value)} placeholder="Team" /></label>
+            <label className="block"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Services</span><input type="text" className="pt-input" value={form.services} onChange={(event) => updateForm('services', event.target.value)} placeholder="Services comma-separated" /></label>
+            <label className="block md:col-span-2 lg:col-span-3"><span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Description</span><input type="text" className="pt-input" value={form.description} onChange={(event) => updateForm('description', event.target.value)} placeholder="Description" /></label>
           </div>
-          <div className="action-row">
+          <div className="flex items-center gap-2 mt-4">
             {editingId && <button className="pt-ghost-btn" type="button" onClick={resetForm}>Cancel</button>}
             <button className="pt-primary-btn" type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save Project'}</button>
           </div>
         </div>
       </form>
 
-      {error && <p role="alert">{error}</p>}
+      {error && <p className="text-red-500 text-sm mt-2" role="alert">{error}</p>}
 
       <section className="panel">
         <div className="tbl-scroll">
